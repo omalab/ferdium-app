@@ -5,7 +5,6 @@ import { TitleBar } from 'electron-react-titlebar/renderer';
 
 import { injectIntl } from 'react-intl';
 import { mdiFlash } from '@mdi/js';
-import Link from '../ui/Link';
 import InfoBar from '../ui/InfoBar';
 
 import { Component as PublishDebugInfo } from '../../features/publishDebugInfo';
@@ -18,7 +17,7 @@ import globalMessages from '../../i18n/globalMessages';
 
 import { isWindows } from '../../environment';
 import AppUpdateInfoBar from '../AppUpdateInfoBar';
-import { GITHUB_FERDI_URL } from '../../config';
+// import { GITHUB_FERDI_URL } from '../../config';
 import { Icon } from '../ui/icon';
 
 class AuthLayout extends Component {
@@ -95,13 +94,6 @@ class AuthLayout extends Component {
             })}
           </div>
           {/* </div> */}
-          <Link
-            to={`${GITHUB_FERDI_URL}/ferdi`}
-            className="auth__adlk"
-            target="_blank"
-          >
-            <img src="./assets/images/adlk.svg" alt="" />
-          </Link>
         </div>
         <PublishDebugInfo />
       </>

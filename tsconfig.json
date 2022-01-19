@@ -18,7 +18,7 @@
     "pretty": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "composite": true,
+    "composite": false,
     // TODO: Change this config option to false once ms v3 is released and adopted
     "esModuleInterop": true,
     "importHelpers": true,

@@ -5,6 +5,12 @@ export default {
   setActive: {
     serviceId: PropTypes.string.isRequired,
     keepActiveRoute: PropTypes.bool,
+    url: PropTypes.string,
+  },
+  setEmailActive: {
+    serviceId: PropTypes.string.isRequired,
+    keepActiveRoute: PropTypes.bool,
+    url: PropTypes.string,
   },
   blurActive: {},
   setActiveNext: {},
@@ -79,6 +85,8 @@ export default {
   },
   reloadActive: {},
   reloadAll: {},
+  listAll: {},
+  listcurrentWSEmailRecipes: {},
   reloadUpdatedServices: {},
   filter: {
     needle: PropTypes.string.isRequired,

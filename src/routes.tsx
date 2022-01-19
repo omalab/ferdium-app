@@ -7,6 +7,7 @@ import SettingsWindow from './containers/settings/SettingsWindow';
 import RecipesScreen from './containers/settings/RecipesScreen';
 import ServicesScreen from './containers/settings/ServicesScreen';
 import EditServiceScreen from './containers/settings/EditServiceScreen';
+import EmailSelectorScreen from './containers/EmailSelector';
 import AccountScreen from './containers/settings/AccountScreen';
 import TeamScreen from './containers/settings/TeamScreen';
 import EditUserScreen from './containers/settings/EditUserScreen';
@@ -47,6 +48,7 @@ class Routes extends Component<Props> {
             <IndexRedirect to="/settings/recipes" />
             <Route path="/settings/recipes" component={RecipesScreen} />
             <Route path="/settings/recipes/:filter" component={RecipesScreen} />
+            <Route path="/settings/emailSelector" component={EmailSelectorScreen} />
             <Route path="/settings/services" component={ServicesScreen} />
             <Route
               path="/settings/services/:action/:id"

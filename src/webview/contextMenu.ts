@@ -13,7 +13,6 @@ export default async function setupContextMenu(
   const contextMenuBuilder = new ContextMenuBuilder(webContents);
 
   webContents.on('context-menu', (_e, props) => {
-    // TODO?: e.preventDefault();
     contextMenuBuilder.showPopupMenu(
       {
         ...props,

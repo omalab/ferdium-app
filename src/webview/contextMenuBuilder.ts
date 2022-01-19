@@ -30,6 +30,7 @@ interface ContextMenuStringTable {
   searchWith: ({ searchEngine }: { searchEngine: string }) => string;
   openLinkUrl: () => string;
   openLinkInFerdiUrl: () => string;
+  openLinkIn: () => string,
   openInBrowser: () => string;
   copyLinkUrl: () => string;
   copyImageUrl: () => string;
@@ -53,7 +54,8 @@ const contextMenuStringTable: ContextMenuStringTable = {
   pasteAndMatchStyle: () => 'Paste and match style',
   searchWith: ({ searchEngine }) => `Search with ${searchEngine}`,
   openLinkUrl: () => 'Open Link',
-  openLinkInFerdiUrl: () => 'Open Link in Ferdi',
+  openLinkInFerdiUrl: () => 'Open Link in Engage Dock',
+  openLinkIn: () => 'Open Link in Email service',
   openInBrowser: () => 'Open in Browser',
   copyLinkUrl: () => 'Copy Link',
   copyImageUrl: () => 'Copy Image Address',
@@ -222,16 +224,33 @@ export class ContextMenuBuilder {
       },
     });
 
-    const openInFerdiLink = new MenuItem({
+    const openInEDLink = new MenuItem({
       label: this.stringTable.openLinkInFerdiUrl(),
       click: () => {
-        window.location.href = menuInfo.linkURL;
+        ipcRenderer.send('change-recipe', {
+          url: menuInfo.linkURL,
+        });
+      },
+    });
+
+    const openIn = new MenuItem({
+      label: this.stringTable.openLinkIn(),
+      click: () => {
+        const mailArray = menuInfo.linkURL.split('mailto:');
+        let mail = ""
+        mail = mailArray.length === 2 ? mailArray[1] : mailArray[0];
+        ipcRenderer.send('check-mail-recipe', {
+          mail
+        });
       },
     });
 
     menu.append(copyLink);
     menu.append(openLink);
-    menu.append(openInFerdiLink);
+    menu.append(openInEDLink);
+    if (isEmailAddress) {
+      menu.append(openIn);
+    }
 
     if (this.isSrcUrlValid(menuInfo)) {
       this.addSeparator(menu);

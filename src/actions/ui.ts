@@ -5,6 +5,10 @@ export default {
     path: PropTypes.string,
   },
   closeSettings: {},
+  openEmailSelector: {
+    mail: PropTypes.string,
+  },
+  closeEmailSelector: {},
   toggleServiceUpdatedInfoBar: {
     visible: PropTypes.bool,
   },

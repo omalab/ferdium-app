@@ -374,7 +374,7 @@ const createWindow = () => {
   if (isMac) {
     // eslint-disable-next-line global-require
     const { askFormacOSPermissions } = require('./electron/macOSPermissions');
-    setTimeout(() => askFormacOSPermissions(mainWindow), ms('30s'));
+    setTimeout(() => { try { askFormacOSPermissions(mainWindow); ms('30s') } catch (error) {  console.log(error) } });
   }
 
   mainWindow.on('show', () => {
@@ -629,6 +629,37 @@ ipcMain.on('set-spellchecker-locales', (_e, { locale, serviceId }) => {
 
 ipcMain.on('window.toolbar-double-clicked', () => {
   mainWindow?.isMaximized() ? mainWindow.unmaximize() : mainWindow?.maximize();
+});
+
+ipcMain.on('change-recipe', (e, { url }) => {
+  console.log("change-recipe =>", e.frameId);
+  onDidLoad((window) => {
+    try {
+      window.webContents.send('changeRecipeRequest', { url });
+    } catch (error) { console.log(error); }
+  });
+});
+
+ipcMain.on('check-mail-recipe', (e, { mail }) => {
+  debug('window');
+  onDidLoad((window) => {
+    try {
+      debug('window');
+      console.log(e.frameId)
+      window.webContents.send('checkEmailRecipes', { mail });
+    } catch (error) { console.log(error); }
+  });
+});
+
+ipcMain.on('on-context-menu', (e, { url }) => {
+  console.log("on-context-menu =>", e)
+  onDidLoad((window) => {
+    try {
+      window.webContents.send('checkContextMenu', {
+        url,
+      });
+    } catch (error) { console.log(error); }
+  });
 });
 
 // Quit when all windows are closed.
