@@ -9,6 +9,11 @@ export default {
     mail: PropTypes.string,
   },
   closeEmailSelector: {},
+  openServiceSelector: {
+    url: PropTypes.string,
+    domain: PropTypes.string,
+  },
+  closeServiceSelector: {},
   toggleServiceUpdatedInfoBar: {
     visible: PropTypes.bool,
   },

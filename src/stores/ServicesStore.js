@@ -14,7 +14,7 @@ import {
   getRecipeDirectory,
   getDevRecipeDirectory,
 } from '../helpers/recipe-helpers';
-import { emailRecipes } from './urlConfig.json';
+import { social, emailRecipes } from './urlConfig.json';
 import { workspaceStore } from '../features/workspaces';
 import { DEFAULT_SERVICE_SETTINGS, KEEP_WS_LOADED_USID } from '../config';
 import { SPELLCHECKER_LOCALES } from '../i18n/languages';
@@ -43,6 +43,10 @@ export default class ServicesStore extends Store {
   @observable listAllServices = [];
 
   @observable sendToMail = null;
+
+  @observable sendToService = null;
+
+  @observable sendToUrl = null;
 
   // Array of service IDs that have recently been used
   // [0] => Most recent, [n] => Least recent
@@ -74,6 +78,7 @@ export default class ServicesStore extends Store {
     );
     this.actions.service.listAll.listen(this._getAllEnabled.bind(this));
     this.actions.service.listcurrentWSEmailRecipes.listen(this._currentWSEmailRecipes.bind(this));
+    this.actions.service.listcurrentWSserviceRecipes.listen(this._currentWSServiceRecipes.bind(this));
     this.actions.service.detachService.listen(this._detachService.bind(this));
     this.actions.service.focusService.listen(this._focusService.bind(this));
     this.actions.service.focusActiveService.listen(
@@ -302,6 +307,31 @@ export default class ServicesStore extends Store {
       } return false
     })
     return output;
+  }
+
+
+  @computed get allServiceRecipes() {
+    const output = this.enabled;
+    const services = output.filter(el => {
+      const socialItem = social[el.recipe.id];
+      return this.sendToService && socialItem && socialItem.domains && socialItem.domains.includes(this.sendToService)
+    });
+    return services;
+  }
+
+  @computed get currentWSServiceRecipes() {
+    const activeWorkSpace = this.stores.workspaces.activeWorkspace;
+    if(activeWorkSpace) {
+      const activeServices = workspaceStore.getWorkspaceServices(activeWorkSpace);
+      const services = this.stores.services.listAllServices.filter(el => {
+        const socialItem = social[el.recipe.id];
+
+        return this.sendToService && socialItem && socialItem.domains && socialItem.domains.includes(this.sendToService)
+      });
+      const servicesInSpace = activeServices.filter(el => services.find(elem => elem.id === el.id));
+      return servicesInSpace;
+    }
+    return [];
   }
 
   @computed get all() {
@@ -631,7 +661,7 @@ export default class ServicesStore extends Store {
     service.isActive = true;
     this._awake({ serviceId: service.id });
 
-    if (url && url.length > 0) {
+    if (url && url.length > 0 && service.webview) {
       service.webview.loadURL(url);
     }
 
@@ -1082,6 +1112,11 @@ export default class ServicesStore extends Store {
 
   @action _currentWSEmailRecipes() {
     const service = this.currentWSEmailRecipes;
+    return service;
+  }
+
+  @action _currentWSServiceRecipes() {
+    const service = this.currentWSServiceRecipes;
     return service;
   }
 

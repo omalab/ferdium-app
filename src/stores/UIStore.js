@@ -17,6 +17,8 @@ export default class UIStore extends Store {
     this.actions.ui.closeSettings.listen(this._closeSettings.bind(this));
     this.actions.ui.openEmailSelector.listen(this._openEmailSelector.bind(this));
     this.actions.ui.closeEmailSelector.listen(this._closeEmailSelector.bind(this));
+    this.actions.ui.openServiceSelector.listen(this._openServiceSelector.bind(this));
+    this.actions.ui.closeServiceSelector.listen(this._closeServiceSelector.bind(this));
     this.actions.ui.toggleServiceUpdatedInfoBar.listen(
       this._toggleServiceUpdatedInfoBar.bind(this),
     );
@@ -94,6 +96,19 @@ export default class UIStore extends Store {
   }
 
   // Actions
+  @action _openServiceSelector({url, domain}) {
+    this.stores.services.sendToUrl = url;
+    this.stores.services.sendToService = domain;
+    const serviceSelectorPath = '/settings/serviceSelector'
+    this.stores.router.push(serviceSelectorPath);
+  }
+
+  @action _closeServiceSelector() {
+    this.stores.services.sendToUrl = null;
+    this.stores.services.sendToService = null;
+    this.stores.router.push('/');
+  }
+
   @action _openEmailSelector({ mail }) {
     this.stores.services.sendToMail = mail;
     const emailSelectorPath = '/settings/emailSelector'
@@ -112,6 +127,8 @@ export default class UIStore extends Store {
 
   @action _closeSettings() {
     this.stores.services.sendToMail = null
+    this.stores.services.sendToService = null
+    this.stores.services.sendToUrl = null
     this.stores.router.push('/');
   }
 
