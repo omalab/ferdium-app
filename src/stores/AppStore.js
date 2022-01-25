@@ -6,6 +6,7 @@ import {
   nativeTheme,
   getCurrentWindow,
   process as remoteProcess,
+  getCurrentWebContents,
 } from '@electron/remote';
 import { action, computed, observable } from 'mobx';
 import moment from 'moment';
@@ -30,6 +31,8 @@ import {
 } from '../helpers/service-helpers';
 import { openExternalUrl } from '../helpers/url-helpers';
 import { sleep } from '../helpers/async-helpers';
+
+import { ContextMenuBuilder } from '../webview/ContextMenuBuilder';
 
 const URI = require('urijs');
 
@@ -222,6 +225,12 @@ export default class AppStore extends Store {
       } else {
         this.actions.ui.openEmailSelector({mail});
       }
+    });
+
+    window.addEventListener('message', ({data}) => {
+      const webContents = getCurrentWebContents();
+      const menu = new ContextMenuBuilder(webContents);
+      menu.showPopupMenu({linkURL: data, editFlags: {canCopy: true}, pageURL: "https://app.audienti.com/"});
     });
 
     ipcRenderer.on('muteApp', () => {
