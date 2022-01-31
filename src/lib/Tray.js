@@ -37,8 +37,8 @@ export default class TrayIcon {
     {
       label:
         tray.mainWindow.isVisible() && tray.mainWindow.isFocused()
-          ? 'Hide Ferdi'
-          : 'Show Ferdi',
+          ? 'Hide Engage Dock'
+          : 'Show Engage Dock',
       click() {
         tray._toggleWindow();
       },
@@ -53,7 +53,7 @@ export default class TrayIcon {
       },
     },
     {
-      label: 'Quit Ferdi',
+      label: 'Quit Engage Dock',
       click() {
         app.quit();
       },

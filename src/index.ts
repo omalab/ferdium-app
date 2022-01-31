@@ -467,15 +467,15 @@ app.on('ready', () => {
         arguments: `${extraArgs}--reset-window`,
         iconPath,
         iconIndex: 0,
-        title: 'Move Ferdi to Current Display',
-        description: 'Restore the position and size of Ferdi',
+        title: 'Move Engage Dock to Current Display',
+        description: 'Restore the position and size of Engage Dock',
       },
       {
         program: process.execPath,
         arguments: `${extraArgs}--quit`,
         iconPath,
         iconIndex: 0,
-        title: 'Quit Ferdi',
+        title: 'Quit Engage Dock',
         description: '',
       },
     ]);
@@ -641,7 +641,7 @@ ipcMain.on('window.toolbar-double-clicked', () => {
 });
 
 ipcMain.on('change-recipe', (e, { url }) => {
-  console.log("change-recipe =>", e.frameId);
+  debug("change-recipe =>", e.frameId);
   onDidLoad((window) => {
     try {
       window.webContents.send('changeRecipeRequest', { url });
@@ -697,7 +697,7 @@ app.on('before-quit', event => {
     selection = dialog.showMessageBoxSync(mainWindow!, {
       type: 'question',
       message: 'Quit',
-      detail: 'Do you really want to quit Ferdi?',
+      detail: 'Do you really want to quit Engage Dock?',
       buttons: ['Yes', 'No'],
     });
   }

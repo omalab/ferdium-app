@@ -34,7 +34,7 @@ const messages = defineMessages({
   },
   supportFerdi: {
     id: 'settings.navigation.supportFerdi',
-    defaultMessage: 'About Ferdi',
+    defaultMessage: 'About Engage Dock',
   },
   logout: {
     id: 'settings.navigation.logout',

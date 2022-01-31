@@ -66,7 +66,7 @@ export const askFormacOSPermissions = async (mainWindow: BrowserWindow) => {
       type: 'info',
       message: 'Enable Screen Sharing',
       detail:
-        'To enable screen sharing for some services, Ferdi needs the permission to record your screen.',
+        'To enable screen sharing for some services, Engage Dock needs the permission to record your screen.',
       buttons: ['Allow screen sharing', 'No', 'Ask me later'],
       defaultId: 0,
       cancelId: 2,

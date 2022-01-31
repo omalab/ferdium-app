@@ -42,7 +42,7 @@ const mainWindow = getCurrentWindow();
 
 const executablePath = isMac ? remoteProcess.execPath : process.execPath;
 const autoLauncher = new AutoLaunch({
-  name: 'Ferdi',
+  name: 'Engage Dock',
   path: executablePath,
 });
 
@@ -282,7 +282,7 @@ export default class AppStore extends Store {
     if (isMac && !localStorage.getItem(CATALINA_NOTIFICATION_HACK_KEY)) {
       debug('Triggering macOS Catalina notification permission trigger');
       // eslint-disable-next-line no-new
-      new window.Notification('Welcome to Ferdi 5', {
+      new window.Notification('Welcome to Engage Dock 5', {
         body: 'Have a wonderful day & happy messaging.',
       });
 
