@@ -227,7 +227,8 @@ export default class AppStore extends Store {
       }
     });
 
-    window.addEventListener('message', ({data}) => {
+    ipcRenderer.on('message-from-audi', (e, data) => {
+      debug(e.senderId)
       const webContents = getCurrentWebContents();
       const menu = new ContextMenuBuilder(webContents);
       menu.showPopupMenu({linkURL: data, editFlags: {canCopy: true}, pageURL: "https://app.audienti.com/"});

@@ -504,6 +504,15 @@ app.on('login', (event, _webContents, _request, authInfo, callback) => {
   }
 });
 
+ipcMain.on('message-from-audi', (e, data) => {
+  debug('message from audienti ===> ', e.frameId, data);
+  onDidLoad((window) => {
+    try {
+      window.webContents.send('message-from-audi', data);
+    } catch (error) { console.log(error); }
+  });
+})
+
 // TODO: evaluate if we need to store the authCallback for every service
 ipcMain.on('feature-basic-auth-credentials', (_e, { user, password }) => {
   debug('Received basic auth credentials', user, '********');

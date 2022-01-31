@@ -194,6 +194,14 @@ class RecipeController {
         inputFocusColor: '#CE9FFC',
         textColor: '#212121',
       });
+      if(this.settings.service.recipe.path && this.settings.service.recipe.path.includes('audienti')) {
+        document.cookie = 'electron=true' // eslint-disable-line unicorn/no-document-cookie
+        window.addEventListener('message', (e) => {
+          if(e.origin.includes('audienti') && typeof e.data === 'string' && e.data.length > 10) {
+              ipcRenderer.send('message-from-audi', e.data)
+            }
+        })
+      }
     });
   }
 
