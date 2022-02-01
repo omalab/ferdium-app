@@ -21,6 +21,7 @@ import {
   workspaceToggleShortcutKey,
   addNewServiceShortcutKey,
   muteFerdiShortcutKey,
+  isMac
 } from '../../environment';
 import { todosStore } from '../../features/todos';
 import { todoActions } from '../../features/todos/actions';
@@ -83,6 +84,7 @@ class Sidebar extends Component {
     hibernateService: PropTypes.func.isRequired,
     wakeUpService: PropTypes.func.isRequired,
     toggleMuteApp: PropTypes.func.isRequired,
+    isFullScreen: PropTypes.bool.isRequired,
     isAppMuted: PropTypes.bool.isRequired,
     isWorkspaceDrawerOpen: PropTypes.bool.isRequired,
     toggleWorkspaceDrawer: PropTypes.func.isRequired,
@@ -127,6 +129,7 @@ class Sidebar extends Component {
       stores,
       actions,
       isTodosServiceActive,
+      isFullScreen,
     } = this.props;
     const { intl } = this.props;
     const todosToggleMessage = todosStore.isTodosPanelVisible
@@ -138,7 +141,7 @@ class Sidebar extends Component {
       : messages.openWorkspaceDrawer;
 
     return (
-      <div className="sidebar">
+      <div className="sidebar" style={isMac && !isFullScreen && {paddingTop:0}}>
         <Tabbar
           {...this.props}
           enableToolTip={() => this.enableToolTip()}
