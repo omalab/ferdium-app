@@ -89,7 +89,6 @@ class EmailSelector extends Component {
           )}
         </div>
       </Layout>
-
     );
   }
 }

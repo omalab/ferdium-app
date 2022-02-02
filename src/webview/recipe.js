@@ -6,8 +6,6 @@ import { autorun, computed, observable } from 'mobx';
 import { pathExistsSync, readFileSync } from 'fs-extra';
 import { debounce } from 'lodash';
 
-import { getCurrentWebContents } from '@electron/remote';
-
 // For some services darkreader tries to use the chrome extension message API
 // This will cause the service to fail loading
 // As the message API is not actually needed, we'll add this shim sendMessage
@@ -29,7 +27,6 @@ import { BadgeHandler } from './badge';
 import { DialogTitleHandler } from './dialogTitle';
 import { SessionHandler } from './sessionHandler';
 import contextMenu from './contextMenu';
-import { ContextMenuBuilder } from './contextMenuBuilder';
 import {
   darkModeStyleExists,
   injectDarkModeStyle,
@@ -200,10 +197,29 @@ class RecipeController {
       if(this.settings.service.recipe.path && this.settings.service.recipe.path.includes('audienti')) {
         document.cookie = 'electron=true' // eslint-disable-line unicorn/no-document-cookie
         window.addEventListener('message', (e) => {
-          if(e.origin.includes('audienti') && typeof e.data === 'string' && e.data.length > 10) {
-            const webContents = getCurrentWebContents();
-            const menu = new ContextMenuBuilder(webContents);
-            menu.showPopupMenu({linkURL: e.data, editFlags: {canCopy: true}, pageURL: "https://app.audienti.com/"});
+          const info = e.data;
+          if(e.origin.includes('audienti') && typeof info === 'string' && info.length > 10) {
+            const isEmailAddress = info.startsWith('mailto:');
+            const isPhoneAddress = info.startsWith('tel:');
+            if(isEmailAddress) {
+              const mailArray = info.split('mailto:');
+              let mail = ""
+              mail = mailArray.length === 2 ? mailArray[1] : mailArray[0];
+              ipcRenderer.send('check-mail-recipe', {
+                mail
+              });
+            } else if (isPhoneAddress) {
+              const telArray = info.split('tel:+');
+              let phone = ""
+              phone = telArray.length === 2 ? telArray[1] : telArray[0];
+              ipcRenderer.send('check-phone-recipe', {
+                phone
+              });
+            } else {
+              ipcRenderer.send('change-recipe', {
+                url: info,
+              });
+            }
           }
         })
       }

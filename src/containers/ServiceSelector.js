@@ -89,7 +89,6 @@ class ServiceSelector extends Component {
           )}
         </div>
       </Layout>
-
     );
   }
 }
