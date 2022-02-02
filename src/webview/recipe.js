@@ -8,8 +8,6 @@ import { debounce } from 'lodash';
 
 import { getCurrentWebContents } from '@electron/remote';
 
-import { ContextMenuBuilder } from './contextMenuBuilder';
-
 // For some services darkreader tries to use the chrome extension message API
 // This will cause the service to fail loading
 // As the message API is not actually needed, we'll add this shim sendMessage
@@ -31,6 +29,7 @@ import { BadgeHandler } from './badge';
 import { DialogTitleHandler } from './dialogTitle';
 import { SessionHandler } from './sessionHandler';
 import contextMenu from './contextMenu';
+import { ContextMenuBuilder } from './contextMenuBuilder';
 import {
   darkModeStyleExists,
   injectDarkModeStyle,

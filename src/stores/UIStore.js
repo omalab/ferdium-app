@@ -17,6 +17,8 @@ export default class UIStore extends Store {
     this.actions.ui.closeSettings.listen(this._closeSettings.bind(this));
     this.actions.ui.openEmailSelector.listen(this._openEmailSelector.bind(this));
     this.actions.ui.closeEmailSelector.listen(this._closeEmailSelector.bind(this));
+    this.actions.ui.openPhoneSelector.listen(this._openPhoneSelector.bind(this));
+    this.actions.ui.closePhoneSelector.listen(this._closePhoneSelector.bind(this));
     this.actions.ui.openServiceSelector.listen(this._openServiceSelector.bind(this));
     this.actions.ui.closeServiceSelector.listen(this._closeServiceSelector.bind(this));
     this.actions.ui.toggleServiceUpdatedInfoBar.listen(
@@ -126,7 +128,7 @@ export default class UIStore extends Store {
     this.stores.router.push(phoneSelectorPath);
   }
 
-  @action _closeEmailSelector() {
+  @action _closePhoneSelector() {
     this.stores.services.sendToPhone = null
     this.stores.router.push('/');
   }
