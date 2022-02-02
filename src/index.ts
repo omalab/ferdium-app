@@ -504,15 +504,6 @@ app.on('login', (event, _webContents, _request, authInfo, callback) => {
   }
 });
 
-ipcMain.on('message-from-audi', (e, data) => {
-  debug('message from audienti ===> ', e.frameId, data);
-  onDidLoad((window) => {
-    try {
-      window.webContents.send('message-from-audi', data);
-    } catch (error) { console.log(error); }
-  });
-})
-
 // TODO: evaluate if we need to store the authCallback for every service
 ipcMain.on('feature-basic-auth-credentials', (_e, { user, password }) => {
   debug('Received basic auth credentials', user, '********');
@@ -660,13 +651,11 @@ ipcMain.on('check-mail-recipe', (e, { mail }) => {
   });
 });
 
-ipcMain.on('on-context-menu', (e, { url }) => {
-  console.log("on-context-menu =>", e)
+ipcMain.on('check-phone-recipe', (e, { phone }) => {
   onDidLoad((window) => {
     try {
-      window.webContents.send('checkContextMenu', {
-        url,
-      });
+      console.log(e.frameId);
+      window.webContents.send('checkPhoneRecipes', { phone });
     } catch (error) { console.log(error); }
   });
 });

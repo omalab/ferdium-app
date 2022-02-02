@@ -14,7 +14,7 @@ import {
   getRecipeDirectory,
   getDevRecipeDirectory,
 } from '../helpers/recipe-helpers';
-import { social, emailRecipes } from './urlConfig.json';
+import { social, emailRecipes, phoneRecipes } from './urlConfig.json';
 import { workspaceStore } from '../features/workspaces';
 import { DEFAULT_SERVICE_SETTINGS, KEEP_WS_LOADED_USID } from '../config';
 import { SPELLCHECKER_LOCALES } from '../i18n/languages';
@@ -42,6 +42,8 @@ export default class ServicesStore extends Store {
 
   @observable listAllServices = [];
 
+  @observable sendToPhone = null;
+
   @observable sendToMail = null;
 
   @observable sendToService = null;
@@ -59,6 +61,7 @@ export default class ServicesStore extends Store {
     // Register action handlers
     this.actions.service.setActive.listen(this._setActive.bind(this));
     this.actions.service.setEmailActive.listen(this._setEmailServiceActive.bind(this));
+    this.actions.service.setPhoneActive.listen(this._setPhoneServiceActive.bind(this));
     this.actions.service.blurActive.listen(this._blurActive.bind(this));
     this.actions.service.setActiveNext.listen(this._setActiveNext.bind(this));
     this.actions.service.setActivePrev.listen(this._setActivePrev.bind(this));
@@ -78,6 +81,7 @@ export default class ServicesStore extends Store {
     );
     this.actions.service.listAll.listen(this._getAllEnabled.bind(this));
     this.actions.service.listcurrentWSEmailRecipes.listen(this._currentWSEmailRecipes.bind(this));
+    this.actions.service.listcurrentWSPhoneRecipes.listen(this._currentWSPhoneRecipes.bind(this));
     this.actions.service.listcurrentWSserviceRecipes.listen(this._currentWSServiceRecipes.bind(this));
     this.actions.service.detachService.listen(this._detachService.bind(this));
     this.actions.service.focusService.listen(this._focusService.bind(this));
@@ -282,6 +286,34 @@ export default class ServicesStore extends Store {
     }
   }
 
+  // Computed all phone props
+  @computed get currentWSPhoneRecipes() {
+    let output = this.allDisplayed;
+
+    output = output.filter((x) => {
+      if (Object.hasOwnProperty.call(phoneRecipes, x.recipe.id)) {
+        console.log(phoneRecipes[x.recipe.id].link.length);
+        if (phoneRecipes[x.recipe.id].link.length > 0) {
+          return true;
+        } return false;
+      } return false;
+    });
+    return output;
+  }
+
+  @computed get allPhoneRecipes() {
+    let output = this.enabled;
+    output = output.filter((x) => {
+      if (Object.hasOwnProperty.call(phoneRecipes, x.recipe.id)) {
+        console.log(phoneRecipes[x.recipe.id].link.length);
+        if (phoneRecipes[x.recipe.id].link.length > 0) {
+          return true
+        } return false
+      } return false
+    })
+    return output;
+  }
+
   // Computed all email props
   @computed get currentWSEmailRecipes() {
     let output = this.allDisplayed;
@@ -308,7 +340,6 @@ export default class ServicesStore extends Store {
     })
     return output;
   }
-
 
   @computed get allServiceRecipes() {
     const output = this.enabled;
@@ -679,6 +710,20 @@ export default class ServicesStore extends Store {
     this.lastUsedServices.unshift(serviceId);
 
     this._focusActiveService();
+  }
+
+  @action _setPhoneServiceActive({ serviceId }) {
+    const service = this.one(serviceId);
+    const phone = this.sendToPhone;
+    if (phone && phone.length > 0) {
+      let url = phoneRecipes[service.recipe.id].link;
+      if (url) {
+        url = url.replace('<phone>', phone)
+        try {
+          this.stores.app.actions.app.changeService({ serviceId, url })
+        } catch (error) { console.log(error); }
+      }
+    }
   }
 
   @action _setEmailServiceActive({ serviceId }) {
@@ -1107,6 +1152,11 @@ export default class ServicesStore extends Store {
 
   @action _getAllEnabled() {
     const service = this.enabled;
+    return service;
+  }
+
+  @action _currentWSPhoneRecipes() {
+    const service = this.currentWSPhoneRecipes;
     return service;
   }
 

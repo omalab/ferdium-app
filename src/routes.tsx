@@ -8,6 +8,7 @@ import RecipesScreen from './containers/settings/RecipesScreen';
 import ServicesScreen from './containers/settings/ServicesScreen';
 import EditServiceScreen from './containers/settings/EditServiceScreen';
 import EmailSelectorScreen from './containers/EmailSelector';
+import PhoneSelectorScreen from './containers/PhoneSelector';
 import ServiceSelectorScreen from './containers/ServiceSelector';
 import AccountScreen from './containers/settings/AccountScreen';
 import TeamScreen from './containers/settings/TeamScreen';
@@ -50,6 +51,7 @@ class Routes extends Component<Props> {
             <Route path="/settings/recipes" component={RecipesScreen} />
             <Route path="/settings/recipes/:filter" component={RecipesScreen} />
             <Route path="/settings/emailSelector" component={EmailSelectorScreen} />
+            <Route path="/settings/phoneSelector" component={PhoneSelectorScreen} />
             <Route path="/settings/serviceSelector" component={ServiceSelectorScreen} />
             <Route path="/settings/services" component={ServicesScreen} />
             <Route

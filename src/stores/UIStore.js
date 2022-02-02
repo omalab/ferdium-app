@@ -120,6 +120,17 @@ export default class UIStore extends Store {
     this.stores.router.push('/');
   }
 
+  @action _openPhoneSelector({ phone }) {
+    this.stores.services.sendToPhone = phone;
+    const phoneSelectorPath = '/settings/phoneSelector'
+    this.stores.router.push(phoneSelectorPath);
+  }
+
+  @action _closeEmailSelector() {
+    this.stores.services.sendToPhone = null
+    this.stores.router.push('/');
+  }
+
   @action _openSettings({ path = '/settings' }) {
     const settingsPath = path !== '/settings' ? `/settings/${path}` : path;
     this.stores.router.push(settingsPath);

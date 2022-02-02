@@ -6,6 +6,10 @@ import { autorun, computed, observable } from 'mobx';
 import { pathExistsSync, readFileSync } from 'fs-extra';
 import { debounce } from 'lodash';
 
+import { getCurrentWebContents } from '@electron/remote';
+
+import { ContextMenuBuilder } from './contextMenuBuilder';
+
 // For some services darkreader tries to use the chrome extension message API
 // This will cause the service to fail loading
 // As the message API is not actually needed, we'll add this shim sendMessage
@@ -198,8 +202,10 @@ class RecipeController {
         document.cookie = 'electron=true' // eslint-disable-line unicorn/no-document-cookie
         window.addEventListener('message', (e) => {
           if(e.origin.includes('audienti') && typeof e.data === 'string' && e.data.length > 10) {
-              ipcRenderer.send('message-from-audi', e.data)
-            }
+            const webContents = getCurrentWebContents();
+            const menu = new ContextMenuBuilder(webContents);
+            menu.showPopupMenu({linkURL: e.data, editFlags: {canCopy: true}, pageURL: "https://app.audienti.com/"});
+          }
         })
       }
     });

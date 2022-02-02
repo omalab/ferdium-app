@@ -1,4 +1,9 @@
 {
+  "phoneRecipes": {
+    "whatsapp": {
+      "link": "https://web.whatsapp.com/send?phone=<phone>"
+    }
+  },
   "emailRecipes":{
     "amazon-work-mail" :{
       "link":""
@@ -11695,7 +11700,7 @@
       }
     },
     "whatsapp": {
-      "domains": ["api.whatsapp.com", "wa.me", "whatsapp.local"],
+      "domains": ["api.whatsapp.com", "wa.me", "whatsapp.local", "whatsapp.com"],
       "schemes": ["whatsapp"],
       "substitution": ["phone:username", "abid:username"],
       "types": {

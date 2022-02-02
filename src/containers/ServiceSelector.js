@@ -59,7 +59,6 @@ class ServiceSelector extends Component {
                   }}>
                     Services from all workspace
                   </h1>
-                  {console.log("tttt",allServiceRecipes, services.sendToUrl)}
                   <table className="service-table">
                     <tbody>
                       {allServiceRecipes.map(service => (
@@ -76,7 +75,6 @@ class ServiceSelector extends Component {
               ) : (
                 <table className="service-table">
                   <tbody>
-                  {console.log("tttt", currentWSServiceRecipes, services.sendToUrl)}
                     {currentWSServiceRecipes.map(service => (
                       <ServiceItem
                         key={service.id}

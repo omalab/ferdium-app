@@ -6,8 +6,6 @@ import {
   nativeTheme,
   getCurrentWindow,
   process as remoteProcess,
-  Menu,
-  // getCurrentWebContents,
 } from '@electron/remote';
 import { action, computed, observable } from 'mobx';
 import moment from 'moment';
@@ -228,39 +226,14 @@ export default class AppStore extends Store {
       }
     });
 
-    ipcRenderer.on('message-from-audi', (e, data) => {
-      debug(e.senderId)
-      const isEmailAddress = data.startsWith('mailto:');
-      const menu = Menu.buildFromTemplate([
-        {
-          label: 'Open Link in Engage Dock',
-          click: () => {
-            if(isEmailAddress) {
-              const mailArray = data.split('mailto:');
-              let mail = ""
-              mail = mailArray.length === 2 ? mailArray[1] : mailArray[0];
-              ipcRenderer.send('check-mail-recipe', {
-                mail
-              });
-            } else {
-              ipcRenderer.send('change-recipe', {
-                url: data,
-              });
-            }
-          },
-        },
-        {
-          label: 'Open Link in browser',
-          click: () => {
-            openExternalUrl(data, true);
-          },
-        },
-      ])
-      menu.popup();
-
-      // const webContents = getCurrentWebContents();
-      // const menu = new ContextMenuBuilder(webContents);
-      // menu.showPopupMenu({linkURL: data, editFlags: {canCopy: true}, pageURL: "https://app.audienti.com/"});
+    ipcRenderer.on('checkPhoneRecipes', (e, { phone }) => {
+      const recipes = this.stores.services.currentWSPhoneRecipes;
+      this.stores.services.sendToPhone = phone;
+      if (recipes.length === 1) {
+        this.actions.service.setPhoneActive({ serviceId: recipes[0].id });
+      } else {
+        this.actions.ui.openPhoneSelector({phone});
+      }
     });
 
     ipcRenderer.on('muteApp', () => {
