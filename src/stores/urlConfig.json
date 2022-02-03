@@ -2,6 +2,9 @@
   "phoneRecipes": {
     "whatsapp": {
       "link": "https://web.whatsapp.com/send?phone=<phone>"
+    },
+    "google-voice": {
+      "link": "https://voice.google.com/u/0/calls?a=nc,%2B<phone>"
     }
   },
   "emailRecipes":{

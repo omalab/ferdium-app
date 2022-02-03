@@ -289,7 +289,6 @@ export default class ServicesStore extends Store {
   // Computed all phone props
   @computed get currentWSPhoneRecipes() {
     let output = this.allDisplayed;
-
     output = output.filter((x) => {
       if (Object.hasOwnProperty.call(phoneRecipes, x.recipe.id)) {
         console.log(phoneRecipes[x.recipe.id].link.length);
@@ -720,7 +719,7 @@ export default class ServicesStore extends Store {
       if (url) {
         url = url.replace('<phone>', phone)
         try {
-          this.stores.app.actions.app.changeService({ serviceId, url })
+          this.actions.service.setActive({ serviceId, url });
         } catch (error) { console.log(error); }
       }
     }
@@ -734,7 +733,7 @@ export default class ServicesStore extends Store {
       if (url) {
         url = url.replace('<mail>', mail)
         try {
-          this.stores.app.actions.app.changeService({ serviceId, url })
+          this.actions.service.setActive({ serviceId, url });
         } catch (error) { console.log(error); }
       }
     }
