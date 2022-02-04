@@ -61,6 +61,13 @@ class ServiceSelector extends Component {
                   </h1>
                   <table className="service-table">
                     <tbody>
+                      {services.listAllServices.filter(el => el.recipe.id === "default").map(service => (
+                        <ServiceItem
+                        key={service.id}
+                        service={service}
+                        goToServiceForm={() => { setActive({ serviceId: service.id, url: services.sendToUrl }); }}
+                      />
+                      ))}
                       {allServiceRecipes.map(service => (
                         <ServiceItem
                           key={service.id}

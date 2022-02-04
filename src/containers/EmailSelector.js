@@ -21,7 +21,7 @@ class EmailSelector extends Component {
     const { closeEmailSelector } = this.props.actions.ui;
 
     const {
-      setEmailActive
+      setEmailActive, setActive,
     } = this.props.actions.service;
     const isLoading = services.allServicesRequest.isExecuting;
 
@@ -61,6 +61,13 @@ class EmailSelector extends Component {
                   </h1>
                   <table className="service-table">
                     <tbody>
+                      {services.listAllServices.filter(el => el.recipe.id === "default").map(service => (
+                        <ServiceItem
+                        key={service.id}
+                        service={service}
+                        goToServiceForm={() => { setActive({ serviceId: service.id, url: services.sendToUrl }); }}
+                      />
+                      ))}
                       {allEmailRecipes.map(service => (
                         <ServiceItem
                           key={service.id}
@@ -83,7 +90,8 @@ class EmailSelector extends Component {
                       />
                     ))}
                   </tbody>
-                </table>)
+                </table>
+              )
             }
           </div>
           )}
@@ -101,7 +109,8 @@ EmailSelector.propTypes = {
   }).isRequired,
   actions: PropTypes.shape({
     service: PropTypes.shape({
-      setEmailActive: PropTypes.func.isRequired
+      setEmailActive: PropTypes.func.isRequired,
+      setActive: PropTypes.func.isRequired,
     }).isRequired,
     ui: PropTypes.shape({
       closeEmailSelector: PropTypes.func.isRequired

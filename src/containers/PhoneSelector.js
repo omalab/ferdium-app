@@ -22,7 +22,7 @@ class PhoneSelector extends Component {
     const { closePhoneSelector } = this.props.actions.ui;
 
     const {
-      setPhoneActive
+      setPhoneActive, setActive,
     } = this.props.actions.service;
     const isLoading = services.allServicesRequest.isExecuting;
 
@@ -62,6 +62,13 @@ class PhoneSelector extends Component {
                   </h1>
                   <table className="service-table">
                     <tbody>
+                      {services.listAllServices.filter(el => el.recipe.id === "default").map(service => (
+                        <ServiceItem
+                        key={service.id}
+                        service={service}
+                        goToServiceForm={() => { setActive({ serviceId: service.id, url: services.sendToUrl }); }}
+                      />
+                      ))}
                       {allPhoneRecipes.map(service => (
                         <ServiceItem
                           key={service.id}
@@ -101,7 +108,8 @@ PhoneSelector.propTypes = {
   }).isRequired,
   actions: PropTypes.shape({
     service: PropTypes.shape({
-      setPhoneActive: PropTypes.func.isRequired
+      setPhoneActive: PropTypes.func.isRequired,
+      setActive: PropTypes.func.isRequired,
     }).isRequired,
     ui: PropTypes.shape({
       closePhoneSelector: PropTypes.func.isRequired
