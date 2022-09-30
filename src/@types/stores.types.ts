@@ -125,6 +125,7 @@ interface AppStore extends TypedStore {
   universalDarkMode: boolean;
   cacheSize: () => void;
   debugInfo: () => void;
+  changeService: any;
 }
 
 interface CommunityRecipesStore extends TypedStore {
@@ -218,6 +219,8 @@ export interface ServicesStore extends TypedStore {
   filtered: () => void;
   isTodosServiceActive: () => void;
   isTodosServiceAdded: () => void;
+  listAllServices: any;
+  sendToMail: any;
 }
 
 // TODO: Create actual type based on the default config in config.ts
@@ -371,4 +374,6 @@ export interface WorkspacesStore extends TypedStore {
   _toggleKeepAllWorkspacesLoadedSetting: () => void;
   _updateSettings: () => void;
   _wasDrawerOpenBeforeSettingsRoute: null;
+  listAll: any;
+  activate: any;
 }

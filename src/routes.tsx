@@ -57,10 +57,10 @@ class FerdiumRoutes extends Component<Props> {
     return (
       <HistoryRouter history={history}>
         <Routes>
-          <Route path="/settings/recipes" component={RecipesScreen} />
-          <Route path="/settings/recipes/:filter" component={RecipesScreen} />
-          <Route path="/settings/emailSelector" component={EmailSelectorScreen} />
-          <Route path="/settings/services" component={ServicesScreen} />
+          <Route path="/settings/recipes" element={RecipesScreen} />
+          <Route path="/settings/recipes/:filter" element={RecipesScreen} />
+          <Route path="/settings/emailSelector" element={EmailSelectorScreen} />
+          <Route path="/settings/services" element={ServicesScreen} />
 
           <Route path="/auth" element={<AuthLayoutContainer {...routeProps} />}>
             <Route

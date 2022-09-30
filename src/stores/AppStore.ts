@@ -237,12 +237,12 @@ export default class AppStore extends TypedStore {
     });
 
     // Handle Recipe change Request
-    ipcRenderer.on('changeRecipeRequest', async (event, data) => {
-      this._changeService(data, this);
+    ipcRenderer.on('changeRecipeRequest', async (_event, data) => {
+      this._changeService(data);
     });
 
-    ipcRenderer.on('checkEmailRecipes', (e, { mail }) => {
-      this.actions.ui.openEmailSelector({mail});
+    ipcRenderer.on('checkEmailRecipes', (_e, { mail }) => {
+      this.actions.ui.openEmailSelector({ mail });
     });
 
     ipcRenderer.on('muteApp', () => {
@@ -431,61 +431,79 @@ export default class AppStore extends TypedStore {
   }
 
   @action _changeService(data) {
-      const url = new URL(data.url);
-      // const host = url.hostname;
-      let shiftTo; let
-        currentRecipe = null;
-      // for (const element of this.stores.services.listAllServices) {
-      //   if (element.isActive) {
-      //     currentRecipe = element.id;
-      //   }
-      //   if (host.includes(element.recipe.id)) {
-      //     console.log(`Link will Open in ${element.recipe.name} Plugin`);
-      //     shiftTo = element.id;
-      //   }
-      // }
-      // this.actions.service.setActive({ serviceId: shiftTo || currentRecipe, keepActiveRoute: !shiftTo, url: data.url });
-      for (const element of this.stores.services.listAllServices) {
-        // debugger
-        const recs = element.recipe.id.split(element.recipe.id.includes('-') ? '-' : '_');
-        if (element.isActive) {
-          currentRecipe = element.id;
-        }
-        for (const x of recs) {
-          const y = social[x];
-          const uri = new URI(url);
-          if (y && y.domains.length > 0 &&
-                y.domains.includes(uri.domain())
-              ) {
-                console.log(`Link will Open in ${element.recipe.name} Plugin`);
-                shiftTo = element.id;
-              }
+    const url = new URL(data.url);
+    // const host = url.hostname;
+    let shiftTo;
+    let currentRecipe = null;
+    // for (const element of this.stores.services.listAllServices) {
+    //   if (element.isActive) {
+    //     currentRecipe = element.id;
+    //   }
+    //   if (host.includes(element.recipe.id)) {
+    //     console.log(`Link will Open in ${element.recipe.name} Plugin`);
+    //     shiftTo = element.id;
+    //   }
+    // }
+    // this.actions.service.setActive({ serviceId: shiftTo || currentRecipe, keepActiveRoute: !shiftTo, url: data.url });
+    for (const element of this.stores.services.listAllServices) {
+      // debugger
+      const recs = element.recipe.id.split(
+        element.recipe.id.includes('-') ? '-' : '_',
+      );
+      if (element.isActive) {
+        currentRecipe = element.id;
+      }
+      for (const x of recs) {
+        const y = social[x];
+        const uri = new URI(url);
+        if (y && y.domains.length > 0 && y.domains.includes(uri.domain())) {
+          console.log(`Link will Open in ${element.recipe.name} Plugin`);
+          shiftTo = element.id;
         }
       }
-      if (data.serviceId) {
-        shiftTo = data.serviceId;
-      }
-      if (shiftTo) {
-        if (this.stores.workspaces && this.stores.workspaces.listAll && this.stores.workspaces.listAll.length > 0) {
-          const activeWorkSapce = this.stores.workspaces.activeWorkspace.id;
-          for (const workspace of this.stores.workspaces.listAll) {
-            for (const serviceId of workspace.services) {
-              if (shiftTo === serviceId) {
-                if (activeWorkSapce === workspace.id) {
-                  this.actions.service.setActive({ serviceId: shiftTo, keepActiveRoute: false, url: data.url });
-                } else {
-                  this.stores.workspaces.actions.workspaces.activate({ workspace });
-                  setTimeout(() => {
-                    this.actions.service.setActive({ serviceId: shiftTo, keepActiveRoute: false, url: data.url });
-                  }, 100);
-                }
+    }
+    if (data.serviceId) {
+      shiftTo = data.serviceId;
+    }
+    if (shiftTo) {
+      if (
+        this.stores.workspaces &&
+        this.stores.workspaces.listAll &&
+        this.stores.workspaces.listAll.length > 0
+      ) {
+        const activeWorkSapce = this.stores.workspaces.activeWorkspace;
+        for (const workspace of this.stores.workspaces.listAll) {
+          for (const serviceId of workspace.services) {
+            if (shiftTo === serviceId) {
+              if (activeWorkSapce === workspace.id) {
+                this.actions.service.setActive({
+                  serviceId: shiftTo,
+                  keepActiveRoute: false,
+                  url: data.url,
+                });
+              } else {
+                this.stores.workspaces.actions.workspaces.activate({
+                  workspace,
+                });
+                setTimeout(() => {
+                  this.actions.service.setActive({
+                    serviceId: shiftTo,
+                    keepActiveRoute: false,
+                    url: data.url,
+                  });
+                }, 100);
               }
             }
           }
         }
-      } else {
-        this.actions.service.setActive({ serviceId: currentRecipe, keepActiveRoute: true, url: data.url });
       }
+    } else {
+      this.actions.service.setActive({
+        serviceId: currentRecipe,
+        keepActiveRoute: true,
+        url: data.url,
+      });
+    }
   }
 
   @action _checkForUpdates() {

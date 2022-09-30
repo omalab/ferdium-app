@@ -76,7 +76,9 @@ export default class ServicesStore extends TypedStore {
 
     // Register action handlers
     this.actions.service.setActive.listen(this._setActive.bind(this));
-    this.actions.service.setEmailActive.listen(this._setEmailServiceActive.bind(this));
+    this.actions.service.setEmailActive.listen(
+      this._setEmailServiceActive.bind(this),
+    );
     this.actions.service.blurActive.listen(this._blurActive.bind(this));
     this.actions.service.setActiveNext.listen(this._setActiveNext.bind(this));
     this.actions.service.setActivePrev.listen(this._setActivePrev.bind(this));
@@ -95,7 +97,9 @@ export default class ServicesStore extends TypedStore {
       this._setWebviewReference.bind(this),
     );
     this.actions.service.listAll.listen(this._getAllEnabled.bind(this));
-    this.actions.service.listcurrentWSEmailRecipes.listen(this._currentWSEmailRecipes.bind(this));
+    this.actions.service.listcurrentWSEmailRecipes.listen(
+      this._currentWSEmailRecipes.bind(this),
+    );
     this.actions.service.detachService.listen(this._detachService.bind(this));
     this.actions.service.focusService.listen(this._focusService.bind(this));
     this.actions.service.focusActiveService.listen(
@@ -325,27 +329,31 @@ export default class ServicesStore extends TypedStore {
   // Computed all email props
   @computed get currentWSEmailRecipes() {
     let output = this.allDisplayed;
-    output = output.filter((x) => {
+    output = output.filter(x => {
       if (Object.hasOwnProperty.call(emailRecipes, x.recipe.id)) {
         console.log(emailRecipes[x.recipe.id].link.length);
         if (emailRecipes[x.recipe.id].link.length > 0) {
           return true;
-        } return false;
-      } return false;
+        }
+        return false;
+      }
+      return false;
     });
     return output;
   }
 
   @computed get allEmailRecipes() {
     let output = this.enabled;
-    output = output.filter((x) => {
+    output = output.filter(x => {
       if (Object.hasOwnProperty.call(emailRecipes, x.recipe.id)) {
         console.log(emailRecipes[x.recipe.id].link.length);
         if (emailRecipes[x.recipe.id].link.length > 0) {
-          return true
-        } return false
-      } return false
-    })
+          return true;
+        }
+        return false;
+      }
+      return false;
+    });
     return output;
   }
 
@@ -362,7 +370,7 @@ export default class ServicesStore extends TypedStore {
               s.index = index;
               return s;
             }),
-        );
+        ) as any;
       }
     }
     this.listAllServices = output;
@@ -714,14 +722,16 @@ export default class ServicesStore extends TypedStore {
 
   @action _setEmailServiceActive({ serviceId }) {
     const service = this.one(serviceId);
-    const mail = this.sendToMail;
+    const mail = this.sendToMail as any;
     if (mail && mail.length > 0) {
       let url = emailRecipes[service.recipe.id].link;
       if (url) {
-        url = url.replace('<mail>', mail)
+        url = url.replace('<mail>', mail);
         try {
-          this.stores.app.actions.app.changeService({ serviceId, url })
-        } catch (error) { console.log(error); }
+          this.stores.app.actions.app.changeService({ serviceId, url });
+        } catch (error) {
+          console.log(error);
+        }
       }
     }
   }
@@ -742,7 +752,7 @@ export default class ServicesStore extends TypedStore {
       this.allDisplayed.length,
     );
 
-    this._setActive({ serviceId: this.allDisplayed[nextIndex].id });
+    this._setActive({ serviceId: this.allDisplayed[nextIndex].id } as any);
   }
 
   @action _setActivePrev() {
@@ -752,7 +762,7 @@ export default class ServicesStore extends TypedStore {
       this.allDisplayed.length,
     );
 
-    this._setActive({ serviceId: this.allDisplayed[prevIndex].id });
+    this._setActive({ serviceId: this.allDisplayed[prevIndex].id } as any);
   }
 
   @action _setUnreadMessageCount({ serviceId, count }) {
@@ -1395,7 +1405,7 @@ export default class ServicesStore extends TypedStore {
     ) {
       debug('No active service found, setting active service to index 0');
 
-      this._setActive({ serviceId: this.allDisplayed[0].id });
+      this._setActive({ serviceId: this.allDisplayed[0].id } as any);
     }
   }
 

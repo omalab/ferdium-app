@@ -8,6 +8,7 @@
 const { timingSafeEqual } = require('crypto');
 
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
+// @ts-ignore
 const Route = use('Route');
 
 const { API_VERSION } = require('../../environment-remote');
@@ -63,6 +64,7 @@ Route.get('health', ({ response }) =>
 ).middleware(OnlyAllowFerdium);
 
 // API is grouped under '/v1/' route
+// @ts-ignore
 Route.group(() => {
   // User authentification
   Route.post('auth/signup', 'UserController.signup');
@@ -95,12 +97,14 @@ Route.group(() => {
   .prefix(API_VERSION)
   .middleware(OnlyAllowFerdium);
 
+// @ts-ignore
 Route.group(() => {
   Route.get('icon/:id', 'ImageController.icon');
 })
   .prefix(API_VERSION)
   .middleware(RequireTokenInQS);
 
+// @ts-ignore
 Route.group(() => {
   // Franz account import
   Route.post('import', 'UserController.import');
@@ -116,6 +120,7 @@ Route.group(() => {
 }).middleware(RequireAuthenticatedBrowser);
 
 Route.get('token/:token', ({ params: { token }, response }) => {
+  // @ts-ignore
   if (validateToken(token)) {
     response.cookie(FERDIUM_LOCAL_TOKEN_COOKIE, token, {
       httpOnly: true,
