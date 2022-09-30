@@ -101,7 +101,7 @@ export default class RecipesStore extends TypedStore {
     const remoteUpdates = [];
 
     // Check for local updates
-    const allJsonFile = asarRecipesPath('all.json');
+    const allJsonFile = asarRecipesPath('featured.json');
     const allJson = readJSONSync(allJsonFile);
     const localUpdates: string[] = [];
 

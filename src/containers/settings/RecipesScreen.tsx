@@ -36,7 +36,7 @@ class RecipesScreen extends Component<RecipesScreenProps> {
   constructor(props: RecipesScreenProps) {
     super(props);
 
-    this.customRecipes = readJsonSync(asarRecipesPath('all.json'));
+    this.customRecipes = readJsonSync(asarRecipesPath('featured.json'));
   }
 
   componentDidMount(): void {
@@ -73,10 +73,10 @@ class RecipesScreen extends Component<RecipesScreenProps> {
   }
 
   _sortByName(recipe1, recipe2): number {
-    if (recipe1.name.toLowerCase() < recipe2.name.toLowerCase()) {
+    if (recipe1.name?.toLowerCase() < recipe2.name?.toLowerCase()) {
       return -1;
     }
-    if (recipe1.name.toLowerCase() > recipe2.name.toLowerCase()) {
+    if (recipe1.name?.toLowerCase() > recipe2.name?.toLowerCase()) {
       return 1;
     }
     return 0;
@@ -136,7 +136,7 @@ class RecipesScreen extends Component<RecipesScreenProps> {
             ...this.createPreviews(
               this.customRecipes.filter(
                 (recipe: Recipe) =>
-                  recipe.name.toLowerCase().includes(needle.toLowerCase()) ||
+                  recipe.name?.toLowerCase().includes(needle.toLowerCase()) ||
                   (recipe.aliases || []).some(alias =>
                     alias.toLowerCase().includes(needle.toLowerCase()),
                   ),
