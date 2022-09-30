@@ -126,7 +126,7 @@ interface ContextMenuStringTable {
   }) => string;
   openLinkUrl: () => string;
   openLinkInFerdiumUrl: () => string;
-  openLinkIn: () => string,
+  openLinkIn: () => string;
   openInBrowser: () => string;
   copyLinkUrl: () => string;
   copyImageUrl: () => string;
@@ -341,10 +341,10 @@ export class ContextMenuBuilder {
       label: this.stringTable.openLinkIn(),
       click: () => {
         const mailArray = menuInfo.linkURL.split('mailto:');
-        let mail = ""
+        let mail = '';
         mail = mailArray.length === 2 ? mailArray[1] : mailArray[0];
         ipcRenderer.send('check-mail-recipe', {
-          mail
+          mail,
         });
       },
     });

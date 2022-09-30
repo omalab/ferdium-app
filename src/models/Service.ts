@@ -453,8 +453,7 @@ export default class Service {
       },
     );
 
-    this.webview.addEventListener('did-start-loading', () => { 
-
+    this.webview.addEventListener('did-start-loading', () => {
       this._didStartLoading();
     });
 

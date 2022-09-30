@@ -45,7 +45,8 @@ export default class WorkspacesStore extends FeatureStore {
   @computed get workspaces() {
     let output = [];
     if (!this.isFeatureActive) return output;
-    if (getUserWorkspacesRequest.result) output = getUserWorkspacesRequest.result;
+    if (getUserWorkspacesRequest.result)
+      output = getUserWorkspacesRequest.result;
     this.listAll = output;
     return output;
   }
