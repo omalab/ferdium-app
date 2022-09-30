@@ -88,6 +88,7 @@ export default <ActionDefinitions>{
   reloadAll: {},
   listAll: {},
   listcurrentWSEmailRecipes: {},
+  listcurrentWSserviceRecipes: {},
   reloadUpdatedServices: {},
   filter: {
     needle: PropTypes.string.isRequired,

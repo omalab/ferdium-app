@@ -221,6 +221,9 @@ export interface ServicesStore extends TypedStore {
   isTodosServiceAdded: () => void;
   listAllServices: any;
   sendToMail: any;
+  currentWSEmailRecipes: any;
+  sendToUrl: any;
+  sendToService: any;
 }
 
 // TODO: Create actual type based on the default config in config.ts
@@ -376,4 +379,5 @@ export interface WorkspacesStore extends TypedStore {
   _wasDrawerOpenBeforeSettingsRoute: null;
   listAll: any;
   activate: any;
+  deactivate: any;
 }

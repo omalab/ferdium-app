@@ -14,8 +14,7 @@ import ms from 'ms';
 import { URL } from 'url';
 import { readJsonSync } from 'fs-extra';
 import { social } from './urlConfig.json';
-
-// const { remote: { BrowserWindow } } = require("electron");
+import { workspaceStore } from '../features/workspaces';
 
 import { Stores } from '../@types/stores.types';
 import { ApiInterface } from '../api';
@@ -41,7 +40,6 @@ import { openExternalUrl } from '../helpers/url-helpers';
 import sleep from '../helpers/async-helpers';
 
 const URI = require('urijs');
-// const template = require('url-template');
 
 const debug = require('../preload-safe-debug')('Ferdium:AppStore');
 
@@ -242,7 +240,13 @@ export default class AppStore extends TypedStore {
     });
 
     ipcRenderer.on('checkEmailRecipes', (_e, { mail }) => {
-      this.actions.ui.openEmailSelector({ mail });
+      const recipes = this.stores.services.currentWSEmailRecipes;
+      this.stores.services.sendToMail = mail;
+      if (recipes.length === 1) {
+        this.actions.service.setEmailActive({ serviceId: recipes[0].id })
+      } else {
+        this.actions.ui.openEmailSelector({ mail });
+      }
     });
 
     ipcRenderer.on('muteApp', () => {
@@ -432,77 +436,60 @@ export default class AppStore extends TypedStore {
 
   @action _changeService(data) {
     const url = new URL(data.url);
-    // const host = url.hostname;
-    let shiftTo;
-    let currentRecipe = null;
-    // for (const element of this.stores.services.listAllServices) {
-    //   if (element.isActive) {
-    //     currentRecipe = element.id;
-    //   }
-    //   if (host.includes(element.recipe.id)) {
-    //     console.log(`Link will Open in ${element.recipe.name} Plugin`);
-    //     shiftTo = element.id;
-    //   }
-    // }
-    // this.actions.service.setActive({ serviceId: shiftTo || currentRecipe, keepActiveRoute: !shiftTo, url: data.url });
-    for (const element of this.stores.services.listAllServices) {
-      // debugger
-      const recs = element.recipe.id.split(
-        element.recipe.id.includes('-') ? '-' : '_',
-      );
-      if (element.isActive) {
-        currentRecipe = element.id;
-      }
-      for (const x of recs) {
-        const y = social[x];
-        const uri = new URI(url);
-        if (y && y.domains.length > 0 && y.domains.includes(uri.domain())) {
-          console.log(`Link will Open in ${element.recipe.name} Plugin`);
-          shiftTo = element.id;
-        }
-      }
-    }
-    if (data.serviceId) {
-      shiftTo = data.serviceId;
-    }
-    if (shiftTo) {
-      if (
-        this.stores.workspaces &&
-        this.stores.workspaces.listAll &&
-        this.stores.workspaces.listAll.length > 0
-      ) {
-        const activeWorkSapce = this.stores.workspaces.activeWorkspace;
-        for (const workspace of this.stores.workspaces.listAll) {
-          for (const serviceId of workspace.services) {
-            if (shiftTo === serviceId) {
-              if (activeWorkSapce === workspace.id) {
-                this.actions.service.setActive({
-                  serviceId: shiftTo,
-                  keepActiveRoute: false,
-                  url: data.url,
-                });
-              } else {
-                this.stores.workspaces.actions.workspaces.activate({
-                  workspace,
-                });
-                setTimeout(() => {
-                  this.actions.service.setActive({
-                    serviceId: shiftTo,
-                    keepActiveRoute: false,
-                    url: data.url,
-                  });
-                }, 100);
-              }
+    const uri = new URI(url);
+
+    const activeWorkSpace = this.stores.workspaces.activeWorkspace;
+    const services = this.stores.services.listAllServices.filter(el => {
+      const socialItem = social[el.recipe.id];
+      return socialItem && socialItem.domains && socialItem.domains.includes(uri.domain())
+    });
+    // if services exist
+    if (services.length > 0) {
+      // active workspace
+      if (activeWorkSpace) {
+        const activeServices = workspaceStore.getWorkspaceServices(activeWorkSpace);
+        const servicesInSpace = activeServices.filter(el => services.find(elem => elem.id === el.id));
+        // one service case
+        if (servicesInSpace.length === 1) {
+          this.actions.service.setActive({ serviceId: servicesInSpace[0].id, keepActiveRoute: false, url: data.url });
+        } else if (servicesInSpace.length > 0) {
+          // more than one service
+          this.actions.ui.openServiceSelector({url: data.url, domain: uri.domain()})
+        } else {
+          // no services in this workspace
+          for (const workspace of this.stores.workspaces.listAll) {
+            const allServicesInWS = workspaceStore.getWorkspaceServices(workspace);
+            const filteredServicesInWS = allServicesInWS.filter(el => services.find(elem => elem.id === el.id));
+            if(filteredServicesInWS.length > 0) {
+              this.stores.workspaces.actions.workspaces.activate({ workspace });
+              setTimeout(() => {
+                if (filteredServicesInWS.length === 1) {
+                  this.actions.service.setActive({ serviceId: filteredServicesInWS[0].id, keepActiveRoute: false, url: data.url });
+                } else {
+                  this.actions.ui.openServiceSelector({url: data.url, domain: uri.domain()})
+                }
+              }, 2000);
+            } else {
+              this.stores.workspaces.actions.workspaces.deactivate();
+              setTimeout(() => {
+                if (services.length === 1) {
+                  this.actions.service.setActive({ serviceId: services[0].id, keepActiveRoute: false, url: data.url });
+                } else {
+                  this.actions.ui.openServiceSelector({url: data.url, domain: uri.domain()})
+                }
+              }, 2000);
             }
           }
         }
+      } else if (services.length === 1) {
+        // without workspace | all services tab with only one service added to the system
+        this.actions.service.setActive({ serviceId: services[0].id, keepActiveRoute: false, url: data.url });
+      } else if (services.length > 0) {
+        // without workspace | all services tab with few services added to the system
+        this.actions.ui.openServiceSelector({url: data.url, domain: uri.domain()})
       }
     } else {
-      this.actions.service.setActive({
-        serviceId: currentRecipe,
-        keepActiveRoute: true,
-        url: data.url,
-      });
+      this.actions.ui.openServiceSelector({url: data.url, domain: uri.domain()})
     }
   }
 

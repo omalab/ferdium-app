@@ -312,7 +312,7 @@ export class ContextMenuBuilder {
         : this.stringTable.copyLinkUrl(),
       click: () => {
         // Omit the mailto: portion of the link; we just want the address
-        const url = isEmailAddress ? menuInfo.linkText : menuInfo.linkURL;
+        const url = isEmailAddress ? menuInfo.linkURL.replace("mailto:", "") : menuInfo.linkURL;
         clipboard.writeText(url);
         this._sendNotificationOnClipboardEvent(
           menuInfo.clipboardNotifications,
@@ -331,20 +331,26 @@ export class ContextMenuBuilder {
     const openInFerdiumLink = new MenuItem({
       label: this.stringTable.openLinkInFerdiumUrl(),
       click: () => {
-        ipcRenderer.send('change-recipe', {
-          url: menuInfo.linkURL,
-        });
+        if(isEmailAddress) {
+          const mailArray = menuInfo.linkURL.split('mailto:');
+          let mail = ""
+          mail = mailArray.length === 2 ? mailArray[1] : mailArray[0];
+          ipcRenderer.send('check-mail-recipe', {
+            mail
+          });
+        } else {
+          ipcRenderer.send('change-recipe', {
+            url: menuInfo.linkURL,
+          });
+        }
       },
     });
 
     const openIn = new MenuItem({
       label: this.stringTable.openLinkIn(),
       click: () => {
-        const mailArray = menuInfo.linkURL.split('mailto:');
-        let mail = '';
-        mail = mailArray.length === 2 ? mailArray[1] : mailArray[0];
-        ipcRenderer.send('check-mail-recipe', {
-          mail,
+        ipcRenderer.send('change-recipe', {
+          url: menuInfo.linkURL,
         });
       },
     });
