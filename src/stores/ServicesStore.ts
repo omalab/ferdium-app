@@ -17,7 +17,7 @@ import {
   getDevRecipeDirectory,
 } from '../helpers/recipe-helpers';
 import Service from '../models/Service';
-import { social, emailRecipes } from './urlConfig.json';
+import { social, emailRecipes, phoneRecipes } from './urlConfig.json';
 import { workspaceStore } from '../features/workspaces';
 import { DEFAULT_SERVICE_SETTINGS, KEEP_WS_LOADED_USID } from '../config';
 import { cleanseJSObject } from '../jsUtils';
@@ -62,6 +62,8 @@ export default class ServicesStore extends TypedStore {
 
   @observable listAllServices = [];
 
+  @observable sendToPhone = null;
+
   @observable sendToMail = null;
 
   @observable sendToService = null;
@@ -82,6 +84,9 @@ export default class ServicesStore extends TypedStore {
     this.actions.service.setActive.listen(this._setActive.bind(this));
     this.actions.service.setEmailActive.listen(
       this._setEmailServiceActive.bind(this),
+    );
+    this.actions.service.setPhoneActive.listen(
+      this._setPhoneServiceActive.bind(this),
     );
     this.actions.service.blurActive.listen(this._blurActive.bind(this));
     this.actions.service.setActiveNext.listen(this._setActiveNext.bind(this));
@@ -104,7 +109,12 @@ export default class ServicesStore extends TypedStore {
     this.actions.service.listcurrentWSEmailRecipes.listen(
       this._currentWSEmailRecipes.bind(this),
     );
-    this.actions.service.listcurrentWSserviceRecipes.listen(this._currentWSServiceRecipes.bind(this));
+    this.actions.service.listcurrentWSPhoneRecipes.listen(
+      this._currentWSPhoneRecipes.bind(this),
+    );
+    this.actions.service.listcurrentWSserviceRecipes.listen(
+      this._currentWSServiceRecipes.bind(this),
+    );
     this.actions.service.detachService.listen(this._detachService.bind(this));
     this.actions.service.focusService.listen(this._focusService.bind(this));
     this.actions.service.focusActiveService.listen(
@@ -331,6 +341,37 @@ export default class ServicesStore extends TypedStore {
     }
   }
 
+  // Computed all phone props
+  @computed get currentWSPhoneRecipes() {
+    let output = this.allDisplayed;
+    output = output.filter(x => {
+      if (Object.hasOwnProperty.call(phoneRecipes, x.recipe.id)) {
+        console.log(phoneRecipes[x.recipe.id].link.length);
+        if (phoneRecipes[x.recipe.id].link.length > 0) {
+          return true;
+        }
+        return false;
+      }
+      return false;
+    });
+    return output;
+  }
+
+  @computed get allPhoneRecipes() {
+    let output = this.enabled;
+    output = output.filter(x => {
+      if (Object.hasOwnProperty.call(phoneRecipes, x.recipe.id)) {
+        console.log(phoneRecipes[x.recipe.id].link.length);
+        if (phoneRecipes[x.recipe.id].link.length > 0) {
+          return true;
+        }
+        return false;
+      }
+      return false;
+    });
+    return output;
+  }
+
   // Computed all email props
   @computed get currentWSEmailRecipes() {
     let output = this.allDisplayed;
@@ -362,26 +403,38 @@ export default class ServicesStore extends TypedStore {
     return output;
   }
 
-
   @computed get allServiceRecipes() {
     const output = this.enabled;
     const services = output.filter(el => {
       const socialItem = social[el.recipe.id];
-      return this.sendToService && socialItem && socialItem.domains && socialItem.domains.includes(this.sendToService)
+      return (
+        this.sendToService &&
+        socialItem &&
+        socialItem.domains &&
+        socialItem.domains.includes(this.sendToService)
+      );
     });
     return services;
   }
 
   @computed get currentWSServiceRecipes() {
     const activeWorkSpace = this.stores.workspaces.activeWorkspace;
-    if(activeWorkSpace) {
-      const activeServices = workspaceStore.getWorkspaceServices(activeWorkSpace);
+    if (activeWorkSpace) {
+      const activeServices =
+        workspaceStore.getWorkspaceServices(activeWorkSpace);
       const services = this.stores.services.listAllServices.filter(el => {
         const socialItem = social[el.recipe.id];
 
-        return this.sendToService && socialItem && socialItem.domains && socialItem.domains.includes(this.sendToService)
+        return (
+          this.sendToService &&
+          socialItem &&
+          socialItem.domains &&
+          socialItem.domains.includes(this.sendToService)
+        );
       });
-      const servicesInSpace = activeServices.filter(el => services.find(elem => elem.id === el.id));
+      const servicesInSpace = activeServices.filter(el =>
+        services.find(elem => elem.id === el.id),
+      );
       return servicesInSpace;
     }
     return [];
@@ -750,6 +803,22 @@ export default class ServicesStore extends TypedStore {
     this._focusActiveService();
   }
 
+  @action _setPhoneServiceActive({ serviceId }) {
+    const service = this.one(serviceId);
+    const phone = this.sendToPhone as any;
+    if (phone && phone.length > 0) {
+      let url = phoneRecipes[service.recipe.id].link;
+      if (url) {
+        url = url.replace('<phone>', phone);
+        try {
+          this.actions.service.setActive({ serviceId, url });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  }
+
   @action _setEmailServiceActive({ serviceId }) {
     const service = this.one(serviceId);
     const mail = this.sendToMail as any;
@@ -758,7 +827,7 @@ export default class ServicesStore extends TypedStore {
       if (url) {
         url = url.replace('<mail>', mail);
         try {
-          this.stores.app.actions.app.changeService({ serviceId, url });
+          this.actions.service.setActive({ serviceId, url });
         } catch (error) {
           console.log(error);
         }
@@ -1178,6 +1247,11 @@ export default class ServicesStore extends TypedStore {
 
   @action _getAllEnabled() {
     const service = this.enabled;
+    return service;
+  }
+
+  @action _currentWSPhoneRecipes() {
+    const service = this.currentWSPhoneRecipes;
     return service;
   }
 

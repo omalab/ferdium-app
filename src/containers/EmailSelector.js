@@ -4,7 +4,6 @@ import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-react-router';
 import Layout from '../components/settings/SettingsLayout';
 
-// import RecipePreviewsStore from '../../stores/RecipePreviewsStore';
 import UserStore from '../stores/UserStore';
 import ServiceStore from '../stores/ServicesStore';
 import Loader from '../components/ui/Loader';
@@ -17,16 +16,11 @@ class EmailSelector extends Component {
     this.props.actions.service.resetStatus();
   }
 
-  // deleteService() {
-  //   this.props.actions.service.deleteService();
-  //   this.props.stores.services.resetFilter();
-  // }
-
   render() {
     const { services } = this.props.stores;
     const { closeEmailSelector } = this.props.actions.ui;
 
-    const { setEmailActive } = this.props.actions.service;
+    const { setEmailActive, setActive } = this.props.actions.service;
     const isLoading = services.allServicesRequest.isExecuting;
 
     const { currentWSEmailRecipes } = services;
@@ -67,6 +61,20 @@ class EmailSelector extends Component {
                   </h1>
                   <table className="service-table">
                     <tbody>
+                      {services.listAllServices
+                        .filter(el => el.recipe.id === 'default')
+                        .map(service => (
+                          <ServiceItem
+                            key={service.id}
+                            service={service}
+                            goToServiceForm={() => {
+                              setActive({
+                                serviceId: service.id,
+                                url: services.sendToUrl,
+                              });
+                            }}
+                          />
+                        ))}
                       {allEmailRecipes.map(service => (
                         <ServiceItem
                           key={service.id}
@@ -111,6 +119,7 @@ EmailSelector.propTypes = {
   actions: PropTypes.shape({
     service: PropTypes.shape({
       setEmailActive: PropTypes.func.isRequired,
+      setActive: PropTypes.func.isRequired,
     }).isRequired,
     ui: PropTypes.shape({
       closeEmailSelector: PropTypes.func.isRequired,

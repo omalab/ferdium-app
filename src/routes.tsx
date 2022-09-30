@@ -14,6 +14,7 @@ import RecipesScreen from './containers/settings/RecipesScreen';
 import ServicesScreen from './containers/settings/ServicesScreen';
 import EditServiceScreen from './containers/settings/EditServiceScreen';
 import EmailSelectorScreen from './containers/EmailSelector';
+import PhoneSelectorScreen from './containers/PhoneSelector';
 import ServiceSelectorScreen from './containers/ServiceSelector';
 import AccountScreen from './containers/settings/AccountScreen';
 import TeamScreen from './containers/settings/TeamScreen';
@@ -61,6 +62,7 @@ class FerdiumRoutes extends Component<Props> {
           <Route path="/settings/recipes" element={RecipesScreen} />
           <Route path="/settings/recipes/:filter" element={RecipesScreen} />
           <Route path="/settings/emailSelector" element={EmailSelectorScreen} />
+          <Route path="/settings/phoneSelector" element={PhoneSelectorScreen} />
           <Route
             path="/settings/serviceSelector"
             element={ServiceSelectorScreen}

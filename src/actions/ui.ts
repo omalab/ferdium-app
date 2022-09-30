@@ -10,6 +10,10 @@ export default <ActionDefinitions>{
     mail: PropTypes.string,
   },
   closeEmailSelector: {},
+  openPhoneSelector: {
+    phone: PropTypes.string,
+  },
+  closePhoneSelector: {},
   openServiceSelector: {
     url: PropTypes.string,
     domain: PropTypes.string,

@@ -26,6 +26,8 @@ export default class UIStore extends TypedStore {
     this.actions.ui.closeEmailSelector.listen(
       this._closeEmailSelector.bind(this),
     );
+    this.actions.ui.openPhoneSelector.listen(this._openPhoneSelector.bind(this));
+    this.actions.ui.closePhoneSelector.listen(this._closePhoneSelector.bind(this));
     this.actions.ui.openServiceSelector.listen(this._openServiceSelector.bind(this));
     this.actions.ui.closeServiceSelector.listen(this._closeServiceSelector.bind(this));
     this.actions.ui.toggleServiceUpdatedInfoBar.listen(
@@ -120,12 +122,27 @@ export default class UIStore extends TypedStore {
 
   @action _openEmailSelector({ mail }) {
     this.stores.services.sendToMail = mail;
+    this.stores.services.sendToUrl = `mailto:${mail}`;
     const emailSelectorPath = '/settings/emailSelector';
     this.stores.router.push(emailSelectorPath);
   }
 
   @action _closeEmailSelector() {
-    this.stores.services.sendToMail = null;
+    this.stores.services.sendToMail = null
+    this.stores.services.sendToUrl = null;
+    this.stores.router.push('/');
+  }
+
+  @action _openPhoneSelector({ phone }) {
+    this.stores.services.sendToPhone = phone;
+    this.stores.services.sendToUrl = `tel:+${phone}`
+    const phoneSelectorPath = '/settings/phoneSelector'
+    this.stores.router.push(phoneSelectorPath);
+  }
+
+  @action _closePhoneSelector() {
+    this.stores.services.sendToPhone = null
+    this.stores.services.sendToUrl = null
     this.stores.router.push('/');
   }
 

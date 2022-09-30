@@ -1,4 +1,12 @@
 {
+  "phoneRecipes": {
+    "whatsapp": {
+      "link": "https://web.whatsapp.com/send?phone=<phone>"
+    },
+    "google-voice": {
+      "link": "https://voice.google.com/u/0/calls?a=nc,%2B<phone>"
+    }
+  },
   "emailRecipes":{
     "amazon-work-mail" :{
       "link":""
@@ -11695,7 +11703,7 @@
       }
     },
     "whatsapp": {
-      "domains": ["api.whatsapp.com", "wa.me", "whatsapp.local"],
+      "domains": ["api.whatsapp.com", "wa.me", "whatsapp.local", "whatsapp.com"],
       "schemes": ["whatsapp"],
       "substitution": ["phone:username", "abid:username"],
       "types": {

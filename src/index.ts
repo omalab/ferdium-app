@@ -665,7 +665,7 @@ ipcMain.on('window.toolbar-double-clicked', () => {
 });
 
 ipcMain.on('change-recipe', (e, { url }) => {
-  console.log('change-recipe =>', e.frameId);
+  debug('change-recipe =>', e.frameId);
   onDidLoad(window => {
     try {
       window.webContents.send('changeRecipeRequest', { url });
@@ -688,13 +688,11 @@ ipcMain.on('check-mail-recipe', (e, { mail }) => {
   });
 });
 
-ipcMain.on('on-context-menu', (e, { url }) => {
-  console.log('on-context-menu =>', e);
-  onDidLoad(window => {
+ipcMain.on('check-phone-recipe', (e, { phone }) => {
+  onDidLoad((window) => {
     try {
-      window.webContents.send('checkContextMenu', {
-        url,
-      });
+      console.log(e.frameId);
+      window.webContents.send('checkPhoneRecipes', { phone });
     } catch (error) {
       console.log(error);
     }

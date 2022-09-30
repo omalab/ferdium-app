@@ -200,6 +200,35 @@ class RecipeController {
         inputFocusColor: '#CE9FFC',
         textColor: '#212121',
       });
+      if(this.settings.service.recipe.path && this.settings.service.recipe.path.includes('audienti')) {
+        document.cookie = 'electron=true' // eslint-disable-line unicorn/no-document-cookie
+        window.addEventListener('message', (e) => {
+          const info = e.data;
+          if(e.origin.includes('audienti') && typeof info === 'string' && info.length > 10) {
+            const isEmailAddress = info.startsWith('mailto:');
+            const isPhoneAddress = info.startsWith('tel:');
+            if(isEmailAddress) {
+              const mailArray = info.split('mailto:');
+              let mail = ""
+              mail = mailArray.length === 2 ? mailArray[1] : mailArray[0];
+              ipcRenderer.send('check-mail-recipe', {
+                mail
+              });
+            } else if (isPhoneAddress) {
+              const telArray = info.split('tel:+');
+              let phone = ""
+              phone = telArray.length === 2 ? telArray[1] : telArray[0];
+              ipcRenderer.send('check-phone-recipe', {
+                phone
+              });
+            } else {
+              ipcRenderer.send('change-recipe', {
+                url: info,
+              });
+            }
+          }
+        })
+      }
     });
 
     // Add ability to go forward or back with mouse buttons (inside the recipe)

@@ -138,6 +138,7 @@ interface ContextMenuStringTable {
   copyPageUrl: () => string;
   goToHomePage: () => string;
   copyMail: () => string;
+  copyPhone: () => string;
   inspectElement: () => string;
 }
 
@@ -167,6 +168,7 @@ const contextMenuStringTable: ContextMenuStringTable = {
   copyPageUrl: () => 'Copy Page URL',
   goToHomePage: () => 'Go to Home Page',
   copyMail: () => 'Copy Email Address',
+  copyPhone: () => 'Copy Phone Number',
   inspectElement: () => 'Inspect Element',
 };
 
@@ -305,14 +307,15 @@ export class ContextMenuBuilder {
   ): Electron.CrossProcessExports.Menu {
     const menu = new Menu();
     const isEmailAddress = menuInfo.linkURL.startsWith('mailto:');
+    const isPhoneAddress = menuInfo.linkURL.startsWith('tel:');
 
     const copyLink = new MenuItem({
       label: isEmailAddress
         ? this.stringTable.copyMail()
-        : this.stringTable.copyLinkUrl(),
+        : isPhoneAddress ? this.stringTable.copyPhone() : this.stringTable.copyLinkUrl(),
       click: () => {
         // Omit the mailto: portion of the link; we just want the address
-        const url = isEmailAddress ? menuInfo.linkURL.replace("mailto:", "") : menuInfo.linkURL;
+        const url = isEmailAddress ? menuInfo.linkURL.replace("mailto:", "") : isPhoneAddress ? menuInfo.linkURL.replace("tel:", "") : menuInfo.linkURL;
         clipboard.writeText(url);
         this._sendNotificationOnClipboardEvent(
           menuInfo.clipboardNotifications,
@@ -337,6 +340,13 @@ export class ContextMenuBuilder {
           mail = mailArray.length === 2 ? mailArray[1] : mailArray[0];
           ipcRenderer.send('check-mail-recipe', {
             mail
+          });
+        } else if (isPhoneAddress) {
+          const telArray = menuInfo.linkURL.split('tel:+');
+          let phone = ""
+          phone = telArray.length === 2 ? telArray[1] : telArray[0];
+          ipcRenderer.send('check-phone-recipe', {
+            phone
           });
         } else {
           ipcRenderer.send('change-recipe', {

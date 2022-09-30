@@ -39,6 +39,8 @@ import {
 import { openExternalUrl } from '../helpers/url-helpers';
 import sleep from '../helpers/async-helpers';
 
+// import { ContextMenuBuilder } from '../webview/ContextMenuBuilder';
+
 const URI = require('urijs');
 
 const debug = require('../preload-safe-debug')('Ferdium:AppStore');
@@ -243,9 +245,19 @@ export default class AppStore extends TypedStore {
       const recipes = this.stores.services.currentWSEmailRecipes;
       this.stores.services.sendToMail = mail;
       if (recipes.length === 1) {
-        this.actions.service.setEmailActive({ serviceId: recipes[0].id })
+        this.actions.service.setEmailActive({ serviceId: recipes[0].id });
       } else {
         this.actions.ui.openEmailSelector({ mail });
+      }
+    });
+
+    ipcRenderer.on('checkPhoneRecipes', (_e, { phone }) => {
+      const recipes = this.stores.services.currentWSPhoneRecipes;
+      this.stores.services.sendToPhone = phone;
+      if (recipes.length === 1) {
+        this.actions.service.setPhoneActive({ serviceId: recipes[0].id });
+      } else {
+        this.actions.ui.openPhoneSelector({ phone });
       }
     });
 
@@ -441,41 +453,72 @@ export default class AppStore extends TypedStore {
     const activeWorkSpace = this.stores.workspaces.activeWorkspace;
     const services = this.stores.services.listAllServices.filter(el => {
       const socialItem = social[el.recipe.id];
-      return socialItem && socialItem.domains && socialItem.domains.includes(uri.domain())
+      return (
+        socialItem &&
+        socialItem.domains &&
+        socialItem.domains.includes(uri.domain())
+      );
     });
     // if services exist
     if (services.length > 0) {
       // active workspace
       if (activeWorkSpace) {
-        const activeServices = workspaceStore.getWorkspaceServices(activeWorkSpace);
-        const servicesInSpace = activeServices.filter(el => services.find(elem => elem.id === el.id));
+        const activeServices =
+          workspaceStore.getWorkspaceServices(activeWorkSpace);
+        const servicesInSpace = activeServices.filter(el =>
+          services.find(elem => elem.id === el.id),
+        );
         // one service case
         if (servicesInSpace.length === 1) {
-          this.actions.service.setActive({ serviceId: servicesInSpace[0].id, keepActiveRoute: false, url: data.url });
+          this.actions.service.setActive({
+            serviceId: servicesInSpace[0].id,
+            keepActiveRoute: false,
+            url: data.url,
+          });
         } else if (servicesInSpace.length > 0) {
           // more than one service
-          this.actions.ui.openServiceSelector({url: data.url, domain: uri.domain()})
+          this.actions.ui.openServiceSelector({
+            url: data.url,
+            domain: uri.domain(),
+          });
         } else {
           // no services in this workspace
           for (const workspace of this.stores.workspaces.listAll) {
-            const allServicesInWS = workspaceStore.getWorkspaceServices(workspace);
-            const filteredServicesInWS = allServicesInWS.filter(el => services.find(elem => elem.id === el.id));
-            if(filteredServicesInWS.length > 0) {
+            const allServicesInWS =
+              workspaceStore.getWorkspaceServices(workspace);
+            const filteredServicesInWS = allServicesInWS.filter(el =>
+              services.find(elem => elem.id === el.id),
+            );
+            if (filteredServicesInWS.length > 0) {
               this.stores.workspaces.actions.workspaces.activate({ workspace });
               setTimeout(() => {
                 if (filteredServicesInWS.length === 1) {
-                  this.actions.service.setActive({ serviceId: filteredServicesInWS[0].id, keepActiveRoute: false, url: data.url });
+                  this.actions.service.setActive({
+                    serviceId: filteredServicesInWS[0].id,
+                    keepActiveRoute: false,
+                    url: data.url,
+                  });
                 } else {
-                  this.actions.ui.openServiceSelector({url: data.url, domain: uri.domain()})
+                  this.actions.ui.openServiceSelector({
+                    url: data.url,
+                    domain: uri.domain(),
+                  });
                 }
               }, 2000);
             } else {
               this.stores.workspaces.actions.workspaces.deactivate();
               setTimeout(() => {
                 if (services.length === 1) {
-                  this.actions.service.setActive({ serviceId: services[0].id, keepActiveRoute: false, url: data.url });
+                  this.actions.service.setActive({
+                    serviceId: services[0].id,
+                    keepActiveRoute: false,
+                    url: data.url,
+                  });
                 } else {
-                  this.actions.ui.openServiceSelector({url: data.url, domain: uri.domain()})
+                  this.actions.ui.openServiceSelector({
+                    url: data.url,
+                    domain: uri.domain(),
+                  });
                 }
               }, 2000);
             }
@@ -483,13 +526,23 @@ export default class AppStore extends TypedStore {
         }
       } else if (services.length === 1) {
         // without workspace | all services tab with only one service added to the system
-        this.actions.service.setActive({ serviceId: services[0].id, keepActiveRoute: false, url: data.url });
+        this.actions.service.setActive({
+          serviceId: services[0].id,
+          keepActiveRoute: false,
+          url: data.url,
+        });
       } else if (services.length > 0) {
         // without workspace | all services tab with few services added to the system
-        this.actions.ui.openServiceSelector({url: data.url, domain: uri.domain()})
+        this.actions.ui.openServiceSelector({
+          url: data.url,
+          domain: uri.domain(),
+        });
       }
     } else {
-      this.actions.ui.openServiceSelector({url: data.url, domain: uri.domain()})
+      this.actions.ui.openServiceSelector({
+        url: data.url,
+        domain: uri.domain(),
+      });
     }
   }
 

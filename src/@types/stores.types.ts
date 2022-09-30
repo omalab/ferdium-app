@@ -224,6 +224,8 @@ export interface ServicesStore extends TypedStore {
   currentWSEmailRecipes: any;
   sendToUrl: any;
   sendToService: any;
+  currentWSPhoneRecipes: any;
+  sendToPhone: any;
 }
 
 // TODO: Create actual type based on the default config in config.ts

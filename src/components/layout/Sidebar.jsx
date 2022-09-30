@@ -26,6 +26,7 @@ import {
   addNewServiceShortcutKey,
   splitModeToggleShortcutKey,
   muteFerdiumShortcutKey,
+  isMac
 } from '../../environment';
 import { todosStore } from '../../features/todos';
 import { todoActions } from '../../features/todos/actions';
@@ -92,6 +93,7 @@ class Sidebar extends Component {
     hibernateService: PropTypes.func.isRequired,
     wakeUpService: PropTypes.func.isRequired,
     toggleMuteApp: PropTypes.func.isRequired,
+    isFullScreen: PropTypes.bool.isRequired,
     isAppMuted: PropTypes.bool.isRequired,
     toggleCollapseMenu: PropTypes.func.isRequired,
     isMenuCollapsed: PropTypes.bool.isRequired,
@@ -143,6 +145,7 @@ class Sidebar extends Component {
       stores,
       actions,
       isTodosServiceActive,
+      isFullScreen,
     } = this.props;
     const {
       hideCollapseButton,
@@ -175,7 +178,7 @@ class Sidebar extends Component {
     const { isMenuCollapsed } = stores.settings.all.app;
 
     return (
-      <div className="sidebar">
+      <div className="sidebar" style={isMac && !isFullScreen && {paddingTop:0}}>
         <Tabbar
           {...this.props}
           enableToolTip={() => this.enableToolTip()}
