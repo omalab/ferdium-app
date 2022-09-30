@@ -46,6 +46,7 @@
 
   .service-table__row {
     border-bottom: 1px solid $theme-gray-lightest;
+    &:last-child { border-bottom: 0px; }
 
     &:hover { background: $theme-gray-lightest; }
 

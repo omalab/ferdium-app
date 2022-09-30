@@ -17,6 +17,7 @@ import {
   getDevRecipeDirectory,
 } from '../helpers/recipe-helpers';
 import Service from '../models/Service';
+import { emailRecipes } from './urlConfig.json';
 import { workspaceStore } from '../features/workspaces';
 import { DEFAULT_SERVICE_SETTINGS, KEEP_WS_LOADED_USID } from '../config';
 import { cleanseJSObject } from '../jsUtils';
@@ -59,6 +60,10 @@ export default class ServicesStore extends TypedStore {
 
   @observable filterNeedle: string | null = null;
 
+  @observable listAllServices = [];
+
+  @observable sendToMail = null;
+
   // Array of service IDs that have recently been used
   // [0] => Most recent, [n] => Least recent
   // No service ID should be in the list multiple times, not all service IDs have to be in the list
@@ -71,6 +76,7 @@ export default class ServicesStore extends TypedStore {
 
     // Register action handlers
     this.actions.service.setActive.listen(this._setActive.bind(this));
+    this.actions.service.setEmailActive.listen(this._setEmailServiceActive.bind(this));
     this.actions.service.blurActive.listen(this._blurActive.bind(this));
     this.actions.service.setActiveNext.listen(this._setActiveNext.bind(this));
     this.actions.service.setActivePrev.listen(this._setActivePrev.bind(this));
@@ -88,6 +94,8 @@ export default class ServicesStore extends TypedStore {
     this.actions.service.setWebviewReference.listen(
       this._setWebviewReference.bind(this),
     );
+    this.actions.service.listAll.listen(this._getAllEnabled.bind(this));
+    this.actions.service.listcurrentWSEmailRecipes.listen(this._currentWSEmailRecipes.bind(this));
     this.actions.service.detachService.listen(this._detachService.bind(this));
     this.actions.service.focusService.listen(this._focusService.bind(this));
     this.actions.service.focusActiveService.listen(
@@ -314,12 +322,39 @@ export default class ServicesStore extends TypedStore {
     }
   }
 
-  // Computed props
+  // Computed all email props
+  @computed get currentWSEmailRecipes() {
+    let output = this.allDisplayed;
+    output = output.filter((x) => {
+      if (Object.hasOwnProperty.call(emailRecipes, x.recipe.id)) {
+        console.log(emailRecipes[x.recipe.id].link.length);
+        if (emailRecipes[x.recipe.id].link.length > 0) {
+          return true;
+        } return false;
+      } return false;
+    });
+    return output;
+  }
+
+  @computed get allEmailRecipes() {
+    let output = this.enabled;
+    output = output.filter((x) => {
+      if (Object.hasOwnProperty.call(emailRecipes, x.recipe.id)) {
+        console.log(emailRecipes[x.recipe.id].link.length);
+        if (emailRecipes[x.recipe.id].link.length > 0) {
+          return true
+        } return false
+      } return false
+    })
+    return output;
+  }
+
   @computed get all(): Service[] {
+    let output = [];
     if (this.stores.user.isLoggedIn) {
       const services = this.allServicesRequest.execute().result;
       if (services) {
-        return observable(
+        output = observable(
           [...services]
             .slice()
             .sort((a, b) => a.order - b.order)
@@ -330,7 +365,8 @@ export default class ServicesStore extends TypedStore {
         );
       }
     }
-    return [];
+    this.listAllServices = output;
+    return output;
   }
 
   @computed get enabled(): Service[] {
@@ -643,7 +679,7 @@ export default class ServicesStore extends TypedStore {
     service.isActive = state;
   }
 
-  @action _setActive({ serviceId, keepActiveRoute = null }) {
+  @action _setActive({ serviceId, keepActiveRoute = null, url }) {
     if (!keepActiveRoute) this.stores.router.push('/');
     const service = this.one(serviceId);
 
@@ -655,6 +691,10 @@ export default class ServicesStore extends TypedStore {
     }
     this._setIsActive(service, true);
     this._awake({ serviceId: service.id });
+
+    if (url && url.length > 0) {
+      service.webview.loadURL(url);
+    }
 
     if (
       this.isTodosServiceActive &&
@@ -670,6 +710,20 @@ export default class ServicesStore extends TypedStore {
     this.lastUsedServices.unshift(serviceId);
 
     this._focusActiveService();
+  }
+
+  @action _setEmailServiceActive({ serviceId }) {
+    const service = this.one(serviceId);
+    const mail = this.sendToMail;
+    if (mail && mail.length > 0) {
+      let url = emailRecipes[service.recipe.id].link;
+      if (url) {
+        url = url.replace('<mail>', mail)
+        try {
+          this.stores.app.actions.app.changeService({ serviceId, url })
+        } catch (error) { console.log(error); }
+      }
+    }
   }
 
   @action _blurActive() {
@@ -1080,6 +1134,16 @@ export default class ServicesStore extends TypedStore {
     } else if (service.webview) {
       service.webview.openDevTools();
     }
+  }
+
+  @action _getAllEnabled() {
+    const service = this.enabled;
+    return service;
+  }
+
+  @action _currentWSEmailRecipes() {
+    const service = this.currentWSEmailRecipes;
+    return service;
   }
 
   @action _openDevToolsForActiveService() {

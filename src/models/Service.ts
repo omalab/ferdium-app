@@ -453,8 +453,7 @@ export default class Service {
       },
     );
 
-    this.webview.addEventListener('did-start-loading', event => {
-      debug('Did start load', this.name, event);
+    this.webview.addEventListener('did-start-loading', () => { 
 
       this._didStartLoading();
     });
@@ -474,7 +473,6 @@ export default class Service {
     this.webview.addEventListener('did-navigate', didLoad.bind(this));
 
     this.webview.addEventListener('did-fail-load', event => {
-      debug('Service failed to load', this.name, event);
       if (
         event.isMainFrame &&
         event.errorCode !== -21 &&

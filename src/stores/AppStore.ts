@@ -13,6 +13,9 @@ import AutoLaunch from 'auto-launch';
 import ms from 'ms';
 import { URL } from 'url';
 import { readJsonSync } from 'fs-extra';
+import { social } from './urlConfig.json';
+
+// const { remote: { BrowserWindow } } = require("electron");
 
 import { Stores } from '../@types/stores.types';
 import { ApiInterface } from '../api';
@@ -36,6 +39,9 @@ import {
 } from '../helpers/service-helpers';
 import { openExternalUrl } from '../helpers/url-helpers';
 import sleep from '../helpers/async-helpers';
+
+const URI = require('urijs');
+// const template = require('url-template');
 
 const debug = require('../preload-safe-debug')('Ferdium:AppStore');
 
@@ -122,6 +128,7 @@ export default class AppStore extends TypedStore {
     );
     this.actions.app.healthCheck.listen(this._healthCheck.bind(this));
     this.actions.app.muteApp.listen(this._muteApp.bind(this));
+    this.actions.app.changeService.listen(this._changeService.bind(this));
     this.actions.app.toggleMuteApp.listen(this._toggleMuteApp.bind(this));
     this.actions.app.toggleCollapseMenu.listen(
       this._toggleCollapseMenu.bind(this),
@@ -227,6 +234,15 @@ export default class AppStore extends TypedStore {
       url = url.replace(/\s?--(updated)/, '');
 
       this.stores.router.push(url);
+    });
+
+    // Handle Recipe change Request
+    ipcRenderer.on('changeRecipeRequest', async (event, data) => {
+      this._changeService(data, this);
+    });
+
+    ipcRenderer.on('checkEmailRecipes', (e, { mail }) => {
+      this.actions.ui.openEmailSelector({mail});
     });
 
     ipcRenderer.on('muteApp', () => {
@@ -412,6 +428,64 @@ export default class AppStore extends TypedStore {
   // Ideally(?) this should be merged with the 'shell-helpers' functionality
   @action _openExternalUrl({ url }) {
     openExternalUrl(new URL(url));
+  }
+
+  @action _changeService(data) {
+      const url = new URL(data.url);
+      // const host = url.hostname;
+      let shiftTo; let
+        currentRecipe = null;
+      // for (const element of this.stores.services.listAllServices) {
+      //   if (element.isActive) {
+      //     currentRecipe = element.id;
+      //   }
+      //   if (host.includes(element.recipe.id)) {
+      //     console.log(`Link will Open in ${element.recipe.name} Plugin`);
+      //     shiftTo = element.id;
+      //   }
+      // }
+      // this.actions.service.setActive({ serviceId: shiftTo || currentRecipe, keepActiveRoute: !shiftTo, url: data.url });
+      for (const element of this.stores.services.listAllServices) {
+        // debugger
+        const recs = element.recipe.id.split(element.recipe.id.includes('-') ? '-' : '_');
+        if (element.isActive) {
+          currentRecipe = element.id;
+        }
+        for (const x of recs) {
+          const y = social[x];
+          const uri = new URI(url);
+          if (y && y.domains.length > 0 &&
+                y.domains.includes(uri.domain())
+              ) {
+                console.log(`Link will Open in ${element.recipe.name} Plugin`);
+                shiftTo = element.id;
+              }
+        }
+      }
+      if (data.serviceId) {
+        shiftTo = data.serviceId;
+      }
+      if (shiftTo) {
+        if (this.stores.workspaces && this.stores.workspaces.listAll && this.stores.workspaces.listAll.length > 0) {
+          const activeWorkSapce = this.stores.workspaces.activeWorkspace.id;
+          for (const workspace of this.stores.workspaces.listAll) {
+            for (const serviceId of workspace.services) {
+              if (shiftTo === serviceId) {
+                if (activeWorkSapce === workspace.id) {
+                  this.actions.service.setActive({ serviceId: shiftTo, keepActiveRoute: false, url: data.url });
+                } else {
+                  this.stores.workspaces.actions.workspaces.activate({ workspace });
+                  setTimeout(() => {
+                    this.actions.service.setActive({ serviceId: shiftTo, keepActiveRoute: false, url: data.url });
+                  }, 100);
+                }
+              }
+            }
+          }
+        }
+      } else {
+        this.actions.service.setActive({ serviceId: currentRecipe, keepActiveRoute: true, url: data.url });
+      }
   }
 
   @action _checkForUpdates() {

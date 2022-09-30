@@ -6,6 +6,10 @@ export default <ActionDefinitions>{
     path: PropTypes.string,
   },
   closeSettings: {},
+  openEmailSelector: {
+    mail: PropTypes.string,
+  },
+  closeEmailSelector: {},
   toggleServiceUpdatedInfoBar: {
     visible: PropTypes.bool,
   },

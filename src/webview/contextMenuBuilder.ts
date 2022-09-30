@@ -126,6 +126,7 @@ interface ContextMenuStringTable {
   }) => string;
   openLinkUrl: () => string;
   openLinkInFerdiumUrl: () => string;
+  openLinkIn: () => string,
   openInBrowser: () => string;
   copyLinkUrl: () => string;
   copyImageUrl: () => string;
@@ -154,6 +155,7 @@ const contextMenuStringTable: ContextMenuStringTable = {
   translateLanguage: ({ translatorLanguage }) => `${translatorLanguage}`,
   openLinkUrl: () => 'Open Link',
   openLinkInFerdiumUrl: () => 'Open Link in Ferdium',
+  openLinkIn: () => 'Open Link in Email service',
   openInBrowser: () => 'Open in Browser',
   copyLinkUrl: () => 'Copy Link',
   copyImageUrl: () => 'Copy Image Address',
@@ -329,13 +331,30 @@ export class ContextMenuBuilder {
     const openInFerdiumLink = new MenuItem({
       label: this.stringTable.openLinkInFerdiumUrl(),
       click: () => {
-        window.location.href = menuInfo.linkURL;
+        ipcRenderer.send('change-recipe', {
+          url: menuInfo.linkURL,
+        });
+      },
+    });
+
+    const openIn = new MenuItem({
+      label: this.stringTable.openLinkIn(),
+      click: () => {
+        const mailArray = menuInfo.linkURL.split('mailto:');
+        let mail = ""
+        mail = mailArray.length === 2 ? mailArray[1] : mailArray[0];
+        ipcRenderer.send('check-mail-recipe', {
+          mail
+        });
       },
     });
 
     menu.append(copyLink);
     menu.append(openLink);
     menu.append(openInFerdiumLink);
+    if (isEmailAddress) {
+      menu.append(openIn);
+    }
 
     if (this.isSrcUrlValid(menuInfo)) {
       this.addSeparator(menu);

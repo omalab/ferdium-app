@@ -14,6 +14,10 @@ export default <ActionDefinitions>{
   launchOnStartup: {
     enable: PropTypes.bool.isRequired,
   },
+  changeService: {
+    serviceId: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired
+  },
   openExternalUrl: {
     url: PropTypes.string.isRequired,
   },
