@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 import { defineMessages, injectIntl } from 'react-intl';
@@ -26,7 +26,7 @@ import {
   addNewServiceShortcutKey,
   splitModeToggleShortcutKey,
   muteFerdiumShortcutKey,
-  isMac
+  isMac,
 } from '../../environment';
 import { todosStore } from '../../features/todos';
 import { todoActions } from '../../features/todos/actions';
@@ -93,7 +93,6 @@ class Sidebar extends Component {
     hibernateService: PropTypes.func.isRequired,
     wakeUpService: PropTypes.func.isRequired,
     toggleMuteApp: PropTypes.func.isRequired,
-    isFullScreen: PropTypes.bool.isRequired,
     isAppMuted: PropTypes.bool.isRequired,
     toggleCollapseMenu: PropTypes.func.isRequired,
     isMenuCollapsed: PropTypes.bool.isRequired,
@@ -105,7 +104,8 @@ class Sidebar extends Component {
       settings: PropTypes.instanceOf(SettingsStore).isRequired,
     }).isRequired,
     actions: PropTypes.shape({
-      settings: PropTypes.instanceOf(SettingsStore).isRequired,
+      // eslint-disable-next-line react/forbid-prop-types
+      settings: PropTypes.any,
     }).isRequired,
   };
 
@@ -145,7 +145,6 @@ class Sidebar extends Component {
       stores,
       actions,
       isTodosServiceActive,
-      isFullScreen,
     } = this.props;
     const {
       hideCollapseButton,
@@ -178,7 +177,7 @@ class Sidebar extends Component {
     const { isMenuCollapsed } = stores.settings.all.app;
 
     return (
-      <div className="sidebar" style={isMac && !isFullScreen && {paddingTop:0}}>
+      <div className="sidebar">
         <Tabbar
           {...this.props}
           enableToolTip={() => this.enableToolTip()}

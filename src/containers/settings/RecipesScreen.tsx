@@ -36,7 +36,7 @@ class RecipesScreen extends Component<RecipesScreenProps> {
   constructor(props: RecipesScreenProps) {
     super(props);
 
-    this.customRecipes = readJsonSync(asarRecipesPath('featured.json'));
+    this.customRecipes = readJsonSync(asarRecipesPath('all.json'));
   }
 
   componentDidMount(): void {

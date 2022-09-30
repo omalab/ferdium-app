@@ -1,4 +1,4 @@
-import { cloneElement, Component } from 'react';
+import React, { cloneElement, Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { TitleBar } from 'electron-react-titlebar/renderer';
@@ -8,7 +8,7 @@ import { mdiFlash } from '@mdi/js';
 import InfoBar from '../ui/InfoBar';
 
 import { Component as PublishDebugInfo } from '../../features/publishDebugInfo';
-
+import Link from '../ui/Link';
 import {
   oneOrManyChildElements,
   globalError as globalErrorPropType,
@@ -18,7 +18,7 @@ import globalMessages from '../../i18n/globalMessages';
 
 import { isWindows } from '../../environment';
 import AppUpdateInfoBar from '../AppUpdateInfoBar';
-// import { GITHUB_FERDIUM_URL } from '../../config';
+import { GITHUB_FERDIUM_URL } from '../../config';
 import Icon from '../ui/icon';
 
 import { serverName } from '../../api/apiBase';

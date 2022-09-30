@@ -15,7 +15,7 @@ import ServicesScreen from './containers/settings/ServicesScreen';
 import EditServiceScreen from './containers/settings/EditServiceScreen';
 import EmailSelectorScreen from './containers/EmailSelector';
 import PhoneSelectorScreen from './containers/PhoneSelector';
-import ServiceSelectorScreen from './containers/ServiceSelector';
+// import ServiceSelectorScreen from './containers/ServiceSelector';
 import AccountScreen from './containers/settings/AccountScreen';
 import TeamScreen from './containers/settings/TeamScreen';
 import EditUserScreen from './containers/settings/EditUserScreen';
@@ -59,16 +59,6 @@ class FerdiumRoutes extends Component<Props> {
     return (
       <HistoryRouter history={history}>
         <Routes>
-          <Route path="/settings/recipes" element={RecipesScreen} />
-          <Route path="/settings/recipes/:filter" element={RecipesScreen} />
-          <Route path="/settings/emailSelector" element={EmailSelectorScreen} />
-          <Route path="/settings/phoneSelector" element={PhoneSelectorScreen} />
-          <Route
-            path="/settings/serviceSelector"
-            element={ServiceSelectorScreen}
-          />
-          <Route path="/settings/services" element={ServicesScreen} />
-
           <Route path="/auth" element={<AuthLayoutContainer {...routeProps} />}>
             <Route
               path="/auth"
@@ -154,6 +144,19 @@ class FerdiumRoutes extends Component<Props> {
                 path="/settings/services/:action/:id"
                 element={<EditServiceScreen {...this.props} />}
               />
+              <Route
+                path="/settings/emailSelector"
+                element={<EmailSelectorScreen {...this.props} />}
+              />
+              <Route
+                path="/settings/phoneSelector"
+                element={<PhoneSelectorScreen {...this.props} />}
+              />
+              <Route
+                path="/settings/serviceSelector"
+                element={<ServicesScreen {...this.props} />}
+              />
+
               <Route
                 path={WORKSPACES_ROUTES.ROOT}
                 element={<WorkspacesScreen {...this.props} />}

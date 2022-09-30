@@ -147,7 +147,7 @@ class AppLayout extends Component {
                 className={classes.titleBar}
               />
             )}
-            <div className={`app__content ${classes.appContent}`} style={isMac && !isFullScreen && {paddingTop: '23px'}}>
+            <div className={`app__content ${classes.appContent}`}>
               {workspacesDrawer}
               {sidebar}
               <div className="app__service">

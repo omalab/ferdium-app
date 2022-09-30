@@ -207,7 +207,8 @@ PublishDebugLogModal.propTypes = {
     app: PropTypes.instanceOf(AppStore).isRequired,
   }).isRequired,
   actions: PropTypes.shape({
-    service: PropTypes.instanceOf(ServicesStore).isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    service: PropTypes.any,
   }).isRequired,
   classes: PropTypes.object.isRequired,
 };

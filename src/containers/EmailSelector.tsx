@@ -1,22 +1,19 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import { Component, Key, ReactElement } from 'react';
 import { inject, observer } from 'mobx-react';
-import { RouterStore } from 'mobx-react-router';
 import Layout from '../components/settings/SettingsLayout';
 
-import UserStore from '../stores/UserStore';
-import ServiceStore from '../stores/ServicesStore';
 import Loader from '../components/ui/Loader';
 
 import ServiceItem from '../components/settings/services/ServiceItem';
+import { StoresProps } from 'src/@types/ferdium-components.types';
 
-class EmailSelector extends Component {
+class EmailSelector extends Component<StoresProps> {
   componentWillUnmount() {
     this.props.actions.service.resetFilter();
     this.props.actions.service.resetStatus();
   }
 
-  render() {
+  render(): ReactElement {
     const { services } = this.props.stores;
     const { closeEmailSelector } = this.props.actions.ui;
 
@@ -62,8 +59,11 @@ class EmailSelector extends Component {
                   <table className="service-table">
                     <tbody>
                       {services.listAllServices
-                        .filter(el => el.recipe.id === 'default')
-                        .map(service => (
+                        .filter(
+                          (el: { recipe: { id: string } }) =>
+                            el.recipe.id === 'default',
+                        )
+                        .map((service: { id: Key | null | undefined }) => (
                           <ServiceItem
                             key={service.id}
                             service={service}
@@ -109,22 +109,5 @@ class EmailSelector extends Component {
     );
   }
 }
-
-EmailSelector.propTypes = {
-  stores: PropTypes.shape({
-    user: PropTypes.instanceOf(UserStore).isRequired,
-    services: PropTypes.instanceOf(ServiceStore).isRequired,
-    router: PropTypes.instanceOf(RouterStore).isRequired,
-  }).isRequired,
-  actions: PropTypes.shape({
-    service: PropTypes.shape({
-      setEmailActive: PropTypes.func.isRequired,
-      setActive: PropTypes.func.isRequired,
-    }).isRequired,
-    ui: PropTypes.shape({
-      closeEmailSelector: PropTypes.func.isRequired,
-    }),
-  }).isRequired,
-};
 
 export default inject('stores', 'actions')(observer(EmailSelector));

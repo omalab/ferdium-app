@@ -5,11 +5,11 @@ import Loader from 'react-loader';
 import { FerdiumStores } from '../../@types/stores.types';
 
 type Props = {
-  children: ReactChildren;
-  loaded: boolean;
-  className: string;
-  color: string;
-  stores: FerdiumStores;
+  children?: ReactChildren;
+  loaded?: boolean;
+  className?: string;
+  color?: string;
+  stores?: FerdiumStores;
 };
 
 // Can this file be merged into the './loader/index.tsx' file?
@@ -25,7 +25,7 @@ class LoaderComponent extends Component<Props> {
     const color =
       this.props.color !== 'ACCENT'
         ? this.props.color
-        : this.props.stores.settings.app.accentColor;
+        : this.props.stores?.settings.app.accentColor;
 
     return (
       <Loader
